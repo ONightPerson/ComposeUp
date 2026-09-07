@@ -1,5 +1,7 @@
 package com.example.composeup.variance
 
+import com.example.composeup.sealedtypes.NetworkResult
+
 /**
  * 为什么 NetworkResult 的泛型要写成 <out T>？—— 用实例讲清「协变 (covariance)」。
  *
@@ -35,10 +37,10 @@ fun main() {
     println("========== 实例1：Loading / Failure / Success 能放进同一个 List ==========")
     // Loading、Failure 是 NetworkResult<Nothing>，Success 是 NetworkResult<String>。
     // 只有 out 协变，才能把三者统一成 List<NetworkResult<String>>。
-    val results: List<com.example.composeup.sealedtypes.NetworkResult<String>> = listOf(
-        _root_ide_package_.com.example.composeup.sealedtypes.NetworkResult.Loading,                  // NetworkResult<Nothing> 协变为 NetworkResult<String>
-        _root_ide_package_.com.example.composeup.sealedtypes.NetworkResult.Success("用户数据"),        // 本来就是 NetworkResult<String>
-        _root_ide_package_.com.example.composeup.sealedtypes.NetworkResult.Failure(
+    val results: List<NetworkResult<String>> = listOf(
+        NetworkResult.Loading,                  // NetworkResult<Nothing> 协变为 NetworkResult<String>
+        NetworkResult.Success("用户数据"),        // 本来就是 NetworkResult<String>
+        NetworkResult.Failure(
             500,
             "服务器错误"
         ), // NetworkResult<Nothing> 协变为 NetworkResult<String>
@@ -46,10 +48,10 @@ fun main() {
     results.forEach { println("  $it") }
 
     println("\n========== 实例2：NetworkResult<Dog> 可赋值给 NetworkResult<Animal> ==========")
-    val dogResult: com.example.composeup.sealedtypes.NetworkResult<Dog> =
-        _root_ide_package_.com.example.composeup.sealedtypes.NetworkResult.Success(Dog("旺财"))
+    val dogResult: NetworkResult<Dog> =
+        NetworkResult.Success(Dog("旺财"))
     // Dog 是 Animal 的子类型，加上 NetworkResult 是 out 协变的，所以下面这行成立：
-    val animalResult: com.example.composeup.sealedtypes.NetworkResult<Animal> =
+    val animalResult: NetworkResult<Animal> =
         dogResult   // ← 没有 out 这行会编译报错
     println("  dogResult 直接当作 animalResult 使用：$animalResult")
 
@@ -60,8 +62,8 @@ fun main() {
 }
 
 /** 返回类型写死为 NetworkResult<String>，两个分支分别返回 Loading 和 Success，都能通过 */
-fun fetchUser(loading: Boolean): com.example.composeup.sealedtypes.NetworkResult<String> =
-    if (loading) _root_ide_package_.com.example.composeup.sealedtypes.NetworkResult.Loading else _root_ide_package_.com.example.composeup.sealedtypes.NetworkResult.Success(
+fun fetchUser(loading: Boolean): NetworkResult<String> =
+    if (loading) NetworkResult.Loading else NetworkResult.Success(
         "Alice"
     )
 
