@@ -22,7 +22,9 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons.Filled
 import androidx.compose.material.icons.filled.ExpandLess
 import androidx.compose.material.icons.filled.ExpandMore
+import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.SwapVert
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -48,6 +50,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
@@ -58,6 +61,7 @@ import androidx.compose.ui.tooling.preview.AndroidUiModes.UI_MODE_NIGHT_YES
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.composeup.datastore.SettingsScreen
+import com.example.composeup.nestedscroll.NestedScrollHub
 import com.example.composeup.ui.theme.ComposeUpTheme
 
 class MainActivity : ComponentActivity() {
@@ -66,26 +70,46 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             ComposeUpTheme {
-                // 入口切换：点右下角 FAB 在「原示例 App」与「DataStore 设置页」之间切换
-                var showSettings by rememberSaveable { mutableStateOf(false) }
-                Scaffold(
-                    modifier = Modifier.fillMaxSize(),
-                    floatingActionButton = {
-                        FloatingActionButton(onClick = { showSettings = !showSettings }) {
-                            Icon(
-                                imageVector = Filled.Settings,
-                                contentDescription = "设置",
-                            )
-                        }
-                    },
-                ) { innerPadding ->
-                    if (showSettings) {
-                        SettingsScreen(modifier = Modifier.padding(innerPadding))
-                    } else {
-                        ComposeUpApp(modifier = Modifier.padding(innerPadding))
-                    }
-                }
+                ComposeUpRoot()
             }
+        }
+    }
+}
+
+/** 可切换的演示页面。 */
+private enum class Destination(val title: String, val icon: ImageVector) {
+    Home("原示例 App", Filled.Home),
+    NestedScroll("嵌套滑动进阶", Filled.SwapVert),
+    Settings("DataStore 设置页", Filled.Settings),
+}
+
+/**
+ * 根界面：点右下角 FAB 在几个演示页面之间循环切换。
+ */
+@Composable
+private fun ComposeUpRoot() {
+    var destination by rememberSaveable { mutableStateOf(Destination.Home) }
+    Scaffold(
+        modifier = Modifier.fillMaxSize(),
+        floatingActionButton = {
+            FloatingActionButton(
+                onClick = {
+                    val all = Destination.entries
+                    destination = all[(destination.ordinal + 1) % all.size]
+                },
+            ) {
+                Icon(
+                    imageVector = destination.icon,
+                    contentDescription = destination.title,
+                )
+            }
+        },
+    ) { innerPadding ->
+        val contentModifier = Modifier.padding(innerPadding)
+        when (destination) {
+            Destination.Home -> ComposeUpApp(contentModifier)
+            Destination.NestedScroll -> NestedScrollHub(contentModifier)
+            Destination.Settings -> SettingsScreen(contentModifier)
         }
     }
 }
