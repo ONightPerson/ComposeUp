@@ -136,7 +136,7 @@ fun NestedScrollHub(modifier: Modifier = Modifier) {
             .fillMaxSize()
             .padding(innerPadding)
         when (current) {
-            NestedScrollTopic.CollapsingHeader -> CollapsingHeaderDemo(contentModifier)
+            NestedScrollTopic.CollapsingHeader -> CollapsingHeader(contentModifier)
             NestedScrollTopic.Dispatcher -> DispatcherDemo(contentModifier)
             NestedScrollTopic.SameDirection -> SameDirectionNestingDemo(contentModifier)
             NestedScrollTopic.Orthogonal -> OrthogonalNestingDemo(contentModifier)

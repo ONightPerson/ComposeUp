@@ -1,5 +1,6 @@
 package com.example.composeup.nestedscroll
 
+import android.util.Log
 import androidx.compose.animation.core.animate
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
@@ -32,7 +33,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.Velocity
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import kotlin.math.abs
+
+private const val TAG = "CollapsingHeader"
 
 /** Header 完全展开时的高度。 */
 private val ExpandedHeaderHeight = 200.dp
@@ -68,7 +72,7 @@ private const val SnapVelocityThreshold = 600f
  *  - 松手时 Header 停在半路 → 用 ④ `onPostFling` 做一次吸附动画
  */
 @Composable
-fun CollapsingHeaderDemo(modifier: Modifier = Modifier) {
+fun CollapsingHeader(modifier: Modifier = Modifier) {
     // 折叠进度：0f = 完全展开，1f = 完全折叠。
     // 用 rememberSaveable 保存「比例」而不是「像素」，旋转屏幕 / 换 DPI 都不会错乱。
     var progress by rememberSaveable { mutableFloatStateOf(0f) }
@@ -176,6 +180,7 @@ private class CollapsingHeaderConnection(
      * 返回 `available` 表示「速度被我全部吃掉」，阻止它继续往更上层冒泡。
      */
     override suspend fun onPostFling(consumed: Velocity, available: Velocity): Velocity {
+        Log.i(TAG, "onPostFling: consumed: $consumed, available: $available")
         val current = readProgress()
         val target = when {
             available.y < 0f && current < 1f && abs(available.y) > SnapVelocityThreshold -> 1f
@@ -221,7 +226,7 @@ private fun CollapsibleHeader(progress: Float, modifier: Modifier = Modifier) {
         Column(modifier = Modifier.align(Alignment.CenterStart)) {
             Text(
                 text = "可折叠 Header",
-                style = MaterialTheme.typography.headlineSmall,
+                fontSize = 20.sp,
                 fontWeight = FontWeight.Bold,
             )
             // 折叠后这行副标题被裁掉，只剩标题，等价于一个吸顶工具栏

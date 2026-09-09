@@ -174,7 +174,7 @@ private fun CustomDraggableStrip(
                         // fling 的两个 dispatch 都是 suspend，必须在协程里调用。
                         // 官方建议用 dispatcher.coroutineScope，这样即使本组件在 fling 途中被销毁，
                         // 动画也能在父级的作用域里跑完，不会突然中断。
-                        scope.launch {
+                        dispatcher.coroutineScope.launch {
                             val parentPreFling = dispatcher.dispatchPreFling(velocity)
                             // 小球本身没有惯性需求，把剩余速度全部交还父级
                             val parentPostFling = dispatcher.dispatchPostFling(
@@ -183,7 +183,7 @@ private fun CustomDraggableStrip(
                             )
                             onEvent(
                                 "fling v=${fmt(velocity.y)}  父预吃=${fmt(parentPreFling.y)}  " +
-                                    "父后吃=${fmt(parentPostFling.y)}",
+                                        "父后吃=${fmt(parentPostFling.y)}",
                             )
                         }
                     },
