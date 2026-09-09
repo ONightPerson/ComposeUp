@@ -20,6 +20,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons.Filled
+import androidx.compose.material.icons.filled.Animation
 import androidx.compose.material.icons.filled.ExpandLess
 import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.material.icons.filled.Home
@@ -60,6 +61,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.AndroidUiModes.UI_MODE_NIGHT_YES
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.composeup.animation.AnimationHub
 import com.example.composeup.datastore.SettingsScreen
 import com.example.composeup.nestedscroll.NestedScrollHub
 import com.example.composeup.ui.theme.ComposeUpTheme
@@ -80,6 +82,7 @@ class MainActivity : ComponentActivity() {
 private enum class Destination(val title: String, val icon: ImageVector) {
     Home("原示例 App", Filled.Home),
     NestedScroll("嵌套滑动进阶", Filled.SwapVert),
+    Animation("动画进阶", Filled.Animation),
     Settings("DataStore 设置页", Filled.Settings),
 }
 
@@ -109,6 +112,7 @@ private fun ComposeUpRoot() {
         when (destination) {
             Destination.Home -> ComposeUpApp(contentModifier)
             Destination.NestedScroll -> NestedScrollHub(contentModifier)
+            Destination.Animation -> AnimationHub(contentModifier)
             Destination.Settings -> SettingsScreen(contentModifier)
         }
     }
