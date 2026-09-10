@@ -49,7 +49,7 @@ private enum class VisibilityPreset(val label: String, val note: String) {
     ),
     Slide(
         label = "横向滑入",
-        note = "slideInHorizontally { it } / slideOutHorizontally { -it }：从右侧滑入、向右滑出。" +
+        note = "slideInHorizontally { it } / slideOutHorizontally { -it }：从右侧滑入、向左滑出。" +
             "slide 属于绘制阶段的位移，不改变父容器尺寸，适合工具条、Snackbar、抽屉。",
     ),
     Scale(
@@ -110,7 +110,7 @@ private fun VisibilitySection() {
                 (shrinkVertically(tween(300)) + fadeOut(tween(300)))
         VisibilityPreset.Slide ->
             (slideInHorizontally(tween(300)) { it } + fadeIn(tween(300))) to
-                (slideOutHorizontally(tween(300)) { it } + fadeOut(tween(300)))
+                (slideOutHorizontally(tween(300)) { -it } + fadeOut(tween(300)))
         VisibilityPreset.Scale ->
             (scaleIn(tween(300), initialScale = 0.6f) + fadeIn(tween(300))) to
                 (scaleOut(tween(300)) + fadeOut(tween(300)))

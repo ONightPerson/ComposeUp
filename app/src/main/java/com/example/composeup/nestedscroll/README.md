@@ -26,14 +26,16 @@
 ```
 MainActivity
   └─ ComposeUpTheme
-       └─ ComposeUpRoot            ← Scaffold + 右下角 FAB
-            ├─ Home          ComposeUpApp()          原示例
-            ├─ NestedScroll  NestedScrollHub()       ← 本次新增
-            └─ Settings      SettingsScreen()        DataStore 示例
+       └─ ComposeUpRoot            ← 主页面 = Topic 列表（点击跳转，返回键回列表）
+            ├─ Home          ComposeUpApp()          原示例 App
+            ├─ NestedScroll  NestedScrollHub()       ← 本模块
+            ├─ Animation     AnimationHub()          动画进阶
+            ├─ Keywords      KeywordsHub()           Compose 底层关键字
+            └─ Settings      SettingsScreen()        DataStore 设置页
 ```
 
-点右下角 FAB 循环切换页面，切到 **嵌套滑动进阶** 后进入 `NestedScrollHub`，
-点击列表里任意一项进入具体示例，用系统返回键或左上角箭头退回列表。
+主页面是一个 Topic 列表，点击 **嵌套滑动进阶** 进入 `NestedScrollHub`，
+再点击列表里任意一项进入具体示例；用系统返回键或左上角箭头逐级退回，最终回到主列表。
 
 ---
 
