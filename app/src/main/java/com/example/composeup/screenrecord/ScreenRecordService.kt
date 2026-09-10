@@ -122,22 +122,12 @@ class ScreenRecordService : Service() {
             setVideoEncodingBitRate(5 * 1024 * 1024)
             setVideoFrameRate(30)
             setVideoSize(width, height)
-            
+
             val pfd = contentResolver.openFileDescriptor(uri, "rw")
-            if (pfd == null) {
-                throw IllegalStateException("Failed to open file descriptor for $uri")
-            }
-            try {
+                ?: throw IllegalStateException("Failed to open file descriptor for $uri")
+            pfd.use { pfd ->
                 setOutputFile(pfd.fileDescriptor)
                 prepare()
-            } finally {
-                // The MediaRecorder documentation says that after calling setOutputFile(FileDescriptor),
-                // the caller is responsible for closing the file descriptor. 
-                // It's safe to close it after prepare() or even after start().
-                // However, some implementations might need it until start().
-                // To be safe, we close it here after prepare, but if it still fails, 
-                // we might need to keep it open until stop.
-                pfd.close()
             }
         }
     }
