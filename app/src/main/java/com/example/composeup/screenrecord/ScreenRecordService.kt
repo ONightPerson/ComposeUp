@@ -27,6 +27,12 @@ class ScreenRecordService : Service() {
     private var virtualDisplay: VirtualDisplay? = null
     private var videoUri: Uri? = null
 
+    private val projectionCallback = object : MediaProjection.Callback() {
+        override fun onStop() {
+            stopRecording()
+        }
+    }
+
     companion object {
         private const val TAG = "ScreenRecordService"
         const val ACTION_START = "ACTION_START"
@@ -73,6 +79,7 @@ class ScreenRecordService : Service() {
 
         val projectionManager = getSystemService(Context.MEDIA_PROJECTION_SERVICE) as MediaProjectionManager
         mediaProjection = projectionManager.getMediaProjection(resultCode, data)
+        mediaProjection?.registerCallback(projectionCallback, null)
 
         try {
             setupMediaRecorder()
@@ -173,6 +180,7 @@ class ScreenRecordService : Service() {
         virtualDisplay?.release()
         virtualDisplay = null
 
+        mediaProjection?.unregisterCallback(projectionCallback)
         mediaProjection?.stop()
         mediaProjection = null
 

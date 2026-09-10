@@ -2,11 +2,13 @@ package com.example.composeup.screenrecord
 
 import android.Manifest
 import android.app.Activity
+import android.app.RecoverableSecurityException
 import android.content.Context
 import android.content.Intent
 import android.media.projection.MediaProjectionManager
 import android.os.Build
 import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.IntentSenderRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -36,6 +38,14 @@ fun ScreenRecordHub(modifier: Modifier = Modifier) {
     
     val refreshVideos = {
         videoList = MediaStoreUtils.fetchVideos(context)
+    }
+
+    val deleteLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.StartIntentSenderForResult()
+    ) { result ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            refreshVideos()
+        }
     }
 
     // Load videos
@@ -139,13 +149,22 @@ fun ScreenRecordHub(modifier: Modifier = Modifier) {
                 TextButton(
                     onClick = {
                         scope.launch {
-                            selectedIds.forEach { id ->
-                                videoList.find { it.id == id }?.let { video ->
-                                    MediaStoreUtils.deleteVideo(context, video.uri)
+                            val urisToDelete = selectedIds.mapNotNull { id ->
+                                videoList.find { it.id == id }?.uri
+                            }
+                            try {
+                                val intentSender = MediaStoreUtils.deleteVideos(context, urisToDelete)
+                                if (intentSender != null) {
+                                    deleteLauncher.launch(IntentSenderRequest.Builder(intentSender).build())
+                                } else {
+                                    refreshVideos()
+                                }
+                            } catch (e: SecurityException) {
+                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && e is RecoverableSecurityException) {
+                                    deleteLauncher.launch(IntentSenderRequest.Builder(e.userAction.actionIntent.intentSender).build())
                                 }
                             }
                             selectedIds = emptySet()
-                            refreshVideos()
                         }
                     },
                     colors = ButtonDefaults.textButtonColors(contentColor = Color.Red)
@@ -171,8 +190,18 @@ fun ScreenRecordHub(modifier: Modifier = Modifier) {
                     },
                     onDelete = {
                         scope.launch {
-                            MediaStoreUtils.deleteVideo(context, video.uri)
-                            refreshVideos()
+                            try {
+                                val intentSender = MediaStoreUtils.deleteVideos(context, listOf(video.uri))
+                                if (intentSender != null) {
+                                    deleteLauncher.launch(IntentSenderRequest.Builder(intentSender).build())
+                                } else {
+                                    refreshVideos()
+                                }
+                            } catch (e: SecurityException) {
+                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && e is RecoverableSecurityException) {
+                                    deleteLauncher.launch(IntentSenderRequest.Builder(e.userAction.actionIntent.intentSender).build())
+                                }
+                            }
                         }
                     }
                 )

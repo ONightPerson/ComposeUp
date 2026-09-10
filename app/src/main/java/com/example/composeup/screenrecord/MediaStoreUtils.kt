@@ -1,8 +1,10 @@
 package com.example.composeup.screenrecord
 
+import android.app.RecoverableSecurityException
 import android.content.ContentUris
 import android.content.ContentValues
 import android.content.Context
+import android.content.IntentSender
 import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
@@ -95,11 +97,42 @@ object MediaStoreUtils {
         return videos
     }
 
+    /**
+     * Deletes one or more videos.
+     * On Android 11+, it returns an IntentSender if user confirmation is required.
+     * On Android 10, it may throw RecoverableSecurityException.
+     */
+    fun deleteVideos(context: Context, uris: List<Uri>): IntentSender? {
+        if (uris.isEmpty()) return null
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            return MediaStore.createDeleteRequest(context.contentResolver, uris).intentSender
+        } else {
+            uris.forEach { uri ->
+                try {
+                    context.contentResolver.delete(uri, null, null)
+                } catch (e: SecurityException) {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && e is RecoverableSecurityException) {
+                        return e.userAction.actionIntent.intentSender
+                    } else {
+                        throw e
+                    }
+                }
+            }
+        }
+        return null
+    }
+
     fun deleteVideo(context: Context, uri: Uri): Boolean {
-        return try {
-            context.contentResolver.delete(uri, null, null) > 0
-        } catch (e: Exception) {
-            false
+        try {
+            val result = context.contentResolver.delete(uri, null, null)
+            return result > 0
+        } catch (e: SecurityException) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && e is RecoverableSecurityException) {
+                // Let the caller handle this exception
+                throw e
+            }
+            return false
         }
     }
 }
