@@ -22,10 +22,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.combineTransform
-import kotlinx.coroutines.flow.conflate
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
@@ -58,8 +55,6 @@ fun OperatorsDemo(modifier: Modifier = Modifier) {
     val query by queryFlow.collectAsStateWithLifecycle()
     var results by remember { mutableStateOf<List<String>>(emptyList()) }
     var searchStatus by remember { mutableStateOf("等待输入…") }
-
-    val flow = (1..30).asFlow().conflate()
 
     // 搜索管线：界面进入组合时启动，离开时自动取消（LaunchedEffect 的生命周期）。
     LaunchedEffect(Unit) {

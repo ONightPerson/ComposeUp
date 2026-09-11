@@ -3,7 +3,6 @@ package com.example.composeup.flow
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.map
 import kotlin.time.Duration.Companion.milliseconds
 
 /**
@@ -75,6 +74,3 @@ internal fun sensorStream(intervalMs: Long = 50L, count: Int = 20): Flow<Int> = 
         emit(i + 1)
     }
 }
-
-/** 把「文章标题流」映射成「标题字数流」，供操作符示例里演示 map。 */
-internal fun Flow<String>.titleLengths(): Flow<Int> = map { it.length }

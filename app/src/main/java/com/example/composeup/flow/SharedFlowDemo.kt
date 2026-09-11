@@ -2,6 +2,7 @@ package com.example.composeup.flow
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
@@ -9,6 +10,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -16,9 +18,8 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.foundation.layout.padding
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.delay
@@ -111,7 +112,7 @@ fun SharedFlowDemo(modifier: Modifier = Modifier) {
                 }
             }
         }
-        Readout("当前订阅者数：${events.subscriptionCount.value}")
+        Readout("当前订阅者数：${events.subscriptionCount.collectAsStateWithLifecycle().value}")
         LogBox(eventLog, minHeight = 100.dp)
 
         SectionTitle("② replay 缓存对比：新订阅者能补收多少历史？")
@@ -141,7 +142,7 @@ fun SharedFlowDemo(modifier: Modifier = Modifier) {
                 bLog = (listOf("＋ 新增订阅者#$id（replay=$replay）") + bLog).take(40)
             }
         }
-        Readout("replayCache=${shared.replayCache} · 订阅者数=${shared.subscriptionCount.value}")
+        Readout("replayCache=${shared.replayCache} · 订阅者数=${shared.subscriptionCount.collectAsStateWithLifecycle().value}")
         LogBox(bLog)
 
         SectionTitle("SharedFlow 构造参数")

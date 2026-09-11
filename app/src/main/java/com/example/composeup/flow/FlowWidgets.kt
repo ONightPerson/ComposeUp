@@ -44,9 +44,9 @@ import androidx.compose.ui.unit.dp
 /** Hub 话题列表里的一行卡片。 */
 @Composable
 internal fun FlowRow(
+    modifier: Modifier = Modifier,
     title: String,
     subtitle: String = "",
-    modifier: Modifier = Modifier,
     containerColor: Color = MaterialTheme.colorScheme.surfaceVariant,
 ) {
     Surface(
