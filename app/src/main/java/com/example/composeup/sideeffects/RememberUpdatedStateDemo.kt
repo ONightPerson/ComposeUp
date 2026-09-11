@@ -19,6 +19,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.delay
+import kotlin.time.Duration.Companion.milliseconds
 
 /**
  * 示例③：`rememberUpdatedState` —— 让 effect「不重启」也能引用到最新的值。
@@ -129,7 +130,7 @@ private fun LandingScreen(
 
     LaunchedEffect(sessionId, useCorrect) {
         onLog("▶ effect 启动（计时 $waitMillis ms，期间重组不会重启它）")
-        delay(waitMillis)
+        delay(waitMillis.milliseconds)
         if (useCorrect) {
             onLog("✓ 超时：调用 currentOnTimeout()（最新回调）")
             currentOnTimeout()

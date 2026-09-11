@@ -20,6 +20,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.delay
+import kotlin.time.Duration.Companion.milliseconds
 
 /** 图片加载结果：Loading / Success / Error 三态。 */
 private sealed interface ImageResult {
@@ -31,7 +32,7 @@ private sealed interface ImageResult {
 /** 模拟图片仓库：load 是 suspend；含 "bad" 的 url 返回 null（失败）。 */
 private class ImageRepository {
     suspend fun load(url: String): String? {
-        delay(1200) // 假装网络耗时
+        delay(1200.milliseconds) // 假装网络耗时
         return if (url.contains("bad")) null else "🖼️ 已加载：$url"
     }
 }

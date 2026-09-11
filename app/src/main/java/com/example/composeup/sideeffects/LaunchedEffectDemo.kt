@@ -27,6 +27,7 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
+import kotlin.time.Duration.Companion.milliseconds
 
 /**
  * 示例①：`LaunchedEffect` —— 在 composable 作用域里运行 suspend 函数。
@@ -61,7 +62,7 @@ fun LaunchedEffectDemo(modifier: Modifier = Modifier) {
         log("▶ LaunchedEffect 启动（key pulseRateMs=$pulseRateMs）")
         try {
             while (isActive) {
-                delay(pulseRateMs)          // suspend：等待一个脉冲周期
+                delay(pulseRateMs.milliseconds)          // suspend：等待一个脉冲周期
                 alpha.animateTo(0f)         // suspend：渐隐
                 alpha.animateTo(1f)         // suspend：渐显
                 pulses++

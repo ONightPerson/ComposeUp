@@ -23,6 +23,7 @@ import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlin.time.Duration.Companion.milliseconds
 
 /**
  * 示例②：`rememberCoroutineScope` —— 拿到一个「感知组合生命周期」的作用域，在 composable 之外启动协程。
@@ -91,7 +92,7 @@ fun RememberCoroutineScopeDemo(modifier: Modifier = Modifier) {
                     counter = 0
                     job = scope.launch {
                         while (true) {
-                            delay(1000)
+                            delay(1000.milliseconds)
                             counter++
                         }
                     }
