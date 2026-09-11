@@ -185,7 +185,7 @@ dependencies {
 | API | 来自 | 用途 |
 | --- | --- | --- |
 | `flow.collectAsState(initial = …)` | `compose.runtime` | 把 Flow 收成 Compose `State`；**朴素版，不感知生命周期** |
-| `flow.collectAsStateWithLifecycle(initial = …)` | `lifecycle-runtime-compose` | **Compose 首选**：界面不可见自动停收集 |
+| `flow.collectAsStateWithLifecycle(initialValue = …)` | `lifecycle-runtime-compose` | **Compose 首选**：界面不可见自动停收集（详见 A6） |
 | `stateFlow.collectAsState()` / `.collectAsStateWithLifecycle()` | 同上 | StateFlow 无需初值 |
 | `lifecycle.repeatOnLifecycle(STARTED) { flow.collect {} }` | `lifecycle-runtime-ktx` | 通用（View/Compose 皆可）手动安全收集 |
 | `flow.flowWithLifecycle(lifecycle, STARTED)` | `lifecycle-runtime-ktx` | 把生命周期门控做成操作符 |
@@ -196,12 +196,90 @@ dependencies {
 | `snapshotFlow { }` | `compose.runtime` | 把 Compose 快照状态变化转成 Flow（如滚动位置） |
 | `rememberUpdatedState(value)` | `compose.runtime` | 长生命周期 lambda 里读取最新值 |
 
-> **参数名坑（本工程 Compose 版本）**：`collectAsState` / `collectAsStateWithLifecycle` 的初值参数名是
-> **`initial`**（不是旧教程的 `initialValue`）。
+> **参数名坑（本工程版本，已核实源码）**：两者初值参数名**不同**，别混用——
+> `collectAsState`（`compose.runtime`）用 **`initial`**；`collectAsStateWithLifecycle`（`lifecycle-runtime-compose`）用 **`initialValue`**。
 > **`LocalLifecycleOwner`** 用 `androidx.lifecycle.compose.LocalLifecycleOwner`（`compose.ui.platform` 下的已迁移/弃用）。
 
 ---
 
+## A6. 专题：`androidx.lifecycle:lifecycle-runtime-compose`
+
+**定位**：Compose 与 Lifecycle 的官方桥接库，所有 API 都在包 **`androidx.lifecycle.compose`** 下。
+它把「Flow 收集、生命周期副作用、点击回调」都变得**生命周期感知**——界面不可见时自动暂停、
+回到前台自动恢复，从而省电、省流量、避免泄漏。本工程已引入（见 §0.2），版本随 lifecycle `2.11.0`。
+
+**何时需要它**：只要在 Compose 里消费 `Flow/StateFlow`、或需要「按生命周期做副作用 / 门控回调」，就该用它，
+而不是朴素的 `collectAsState` / 手写 `DisposableEffect + LifecycleEventObserver`。
+
+### A6.1 公开 API 一览（2.11.0，已逐个核实 sources）
+
+| API | 签名要点 | 用途 |
+| --- | --- | --- |
+| `Flow<T>.collectAsStateWithLifecycle` | `(initialValue, lifecycleOwner?, minActiveState = STARTED, context?)` → `State<T>` | 收集**冷/普通 Flow**，必须给 `initialValue` |
+| `StateFlow<T>.collectAsStateWithLifecycle` | `(lifecycleOwner?, minActiveState = STARTED, context?)` → `State<T>` | 收集 **StateFlow**，无需初值（用 `.value`） |
+| `Lifecycle.currentStateAsState()` | → `State<Lifecycle.State>` | 把当前生命周期状态收成 Compose 状态，随 START/STOP 重组 |
+| `LocalLifecycleOwner` | `ProvidableCompositionLocal<LifecycleOwner>` | 取当前 `LifecycleOwner`（新包路径，替代 `compose.ui.platform` 下旧的） |
+| `rememberLifecycleOwner` | `(maxLifecycle = RESUMED, parent = LocalLifecycleOwner.current)` → `LifecycleOwner` | 给子树一个**受限**生命周期的 owner（如让子树最高只到 STARTED） |
+| `LifecycleEventEffect` | `(event, lifecycleOwner?, onEvent)` | 监听**单个**生命周期事件（如 `ON_RESUME`）触发一次性动作，无需清理 |
+| `LifecycleStartEffect` | `(key1…, lifecycleOwner?) { onStopOrDispose { } }` | 进入 `STARTED` 启动、`ON_STOP`/离开组合时清理（成对的 start/stop 副作用） |
+| `LifecycleResumeEffect` | `(key1…, lifecycleOwner?) { onPauseOrDispose { } }` | 进入 `RESUMED` 启动、`ON_PAUSE`/离开组合时清理（成对的 resume/pause 副作用） |
+| `dropUnlessStarted` | `(block: () -> Unit)` → `() -> Unit` | 包装点击回调：**低于 STARTED 时丢弃**该回调（界面不可见就不响应） |
+| `dropUnlessResumed` | `(block: () -> Unit)` → `() -> Unit` | 同上，但门控到 **RESUMED**（防抖：非 resumed 不响应，避免重复点击/重复导航） |
+
+> `minActiveState` 语义：只有当生命周期**至少**处于该状态时才收集上游，跌破即取消。
+> 默认 `STARTED`（可见即收集）；要更省电可用 `RESUMED`（有焦点才收集）。
+> **不允许**传 `INITIALIZED`（会抛异常），`DESTROYED` 也不允许。
+
+### A6.2 典型用法
+
+```kotlin
+// 1) 收集 StateFlow（ViewModel 的 uiState）——最常见
+val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+
+// 2) 收集普通 Flow——必须给 initialValue（注意参数名是 initialValue，不是 initial）
+val tick by remember { tickFlow() }.collectAsStateWithLifecycle(initialValue = 0)
+
+// 3) 更省电：只在有焦点（RESUMED）时收集
+val data by viewModel.data.collectAsStateWithLifecycle(minActiveState = Lifecycle.State.RESUMED)
+
+// 4) 把当前生命周期状态显示出来 / 参与逻辑
+val lifecycleState = LocalLifecycleOwner.current.lifecycle.currentStateAsState()
+Text("当前：${lifecycleState.value}")
+
+// 5) 生命周期副作用：进入 RESUMED 注册、ON_PAUSE 或离开组合时注销
+LifecycleResumeEffect(Unit) {
+    val listener = registerSensorListener()
+    onPauseOrDispose { unregister(listener) }
+}
+
+// 6) 只监听单次事件：回到前台刷新一次
+LifecycleEventEffect(Lifecycle.Event.ON_RESUME) { refresh() }
+
+// 7) 门控点击回调，防止界面在后台/切换动画中被重复触发（常见于导航按钮）
+Button(onClick = dropUnlessResumed { navController.navigate("detail") }) { Text("去详情") }
+```
+
+### A6.3 与 `lifecycle-runtime-ktx` 的分工
+
+| | `lifecycle-runtime-ktx` | `lifecycle-runtime-compose` |
+| --- | --- | --- |
+| 面向 | 通用（View / 纯协程） | Compose 专用 |
+| 代表 API | `lifecycleScope` · `repeatOnLifecycle` · `flowWithLifecycle` | `collectAsStateWithLifecycle` · `LocalLifecycleOwner` · `Lifecycle{Start/Resume/Event}Effect` · `dropUnless*` · `currentStateAsState` |
+| 关系 | 底层机制 | 上层封装（`collectAsStateWithLifecycle` 内部就是 `produceState` + `repeatOnLifecycle`） |
+
+**结论**：Compose 里优先用 `lifecycle-runtime-compose` 的封装（一行搞定、更易读）；
+需要在一个协程里收集**多条**流、或在非 Compose 层，才下沉到 `repeatOnLifecycle`。
+
+### A6.4 坑位提醒
+
+- `Flow<T>` 重载**必须**传 `initialValue`；`StateFlow<T>` 重载**不要**传（会解析到另一个重载）。
+- `LifecycleStartEffect` / `LifecycleResumeEffect` **必须**提供 `onStopOrDispose` / `onPauseOrDispose` 做清理，
+  且建议传 key；只监听「单个事件的一次性动作」时改用更轻的 `LifecycleEventEffect`。
+- `dropUnlessStarted/Resumed` 是 `@Composable`，只能在组合期调用（通常直接内联到 `onClick =` 参数处）。
+- 别再用 `launchWhenStarted` / `launchWhenResumed`——它们已废弃（在 STOPPED 时只是挂起而非取消，仍占资源），
+  用 `repeatOnLifecycle` 或本库的 `collectAsStateWithLifecycle` 取代。
+
+---
 
 # Part B · Jetpack Compose
 
@@ -450,7 +528,7 @@ Compose 状态转 Flow？                           → snapshotFlow { }
 - [ ] 一次性事件放进 StateFlow → 回前台重放最新值、重复弹提示；改 `SharedFlow(replay=0)`。
 - [ ] `repeatOnLifecycle { }` 块里写「只做一次」的副作用 → 它会被反复启停，须幂等。
 - [ ] 并发下用 `stateFlow.value = ...` 做读改写 → 丢更新；用 `update { copy() }`。
-- [ ] `collectAsStateWithLifecycle(initialValue = …)` → 本工程参数名是 **`initial`**。
+- [ ] 混淆初值参数名：`collectAsState(initial = …)`（compose.runtime）vs `collectAsStateWithLifecycle(initialValue = …)`（lifecycle-runtime-compose）——两者不同（详见 A6）。
 - [ ] `debounce/sample` 忘了 `@OptIn(FlowPreview::class)`；`flatMapLatest` 忘了 `@OptIn(ExperimentalCoroutinesApi::class)`。
 - [ ] `LocalLifecycleOwner` 用了 `compose.ui.platform` 下的旧包 → 改 `androidx.lifecycle.compose`。
 

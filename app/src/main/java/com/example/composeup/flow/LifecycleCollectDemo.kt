@@ -62,7 +62,7 @@ fun LifecycleCollectDemo(modifier: Modifier = Modifier) {
     val lifecycleOwner = LocalLifecycleOwner.current
 
     // (1) Compose 首选：生命周期安全的收集。界面不可见时自动停止。
-    val safeTick by remember { tickFlow() }.collectAsStateWithLifecycle(0)
+    val safeTick by remember { tickFlow() }.collectAsStateWithLifecycle(initialValue = 0)
 
     // (2) 对照组：朴素 collectAsState —— 不感知生命周期，后台仍会持续收集。
     val naiveTick by remember { tickFlow() }.collectAsState(initial = 0)
