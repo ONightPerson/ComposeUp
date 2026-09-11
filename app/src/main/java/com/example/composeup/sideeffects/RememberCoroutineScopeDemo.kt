@@ -58,7 +58,7 @@ fun RememberCoroutineScopeDemo(modifier: Modifier = Modifier) {
         ) {
             Note(
                 "下面按钮的 onClick 是普通回调，不能写 LaunchedEffect；用 scope.launch 启动协程调用 suspend 的 showSnackbar。" +
-                    "本组合离开时 scope 会自动取消。",
+                        "本组合离开时 scope 会自动取消。",
             )
             ButtonRow {
                 DemoButton(text = "弹 Snackbar") {
@@ -76,6 +76,7 @@ fun RememberCoroutineScopeDemo(modifier: Modifier = Modifier) {
                         when (result) {
                             SnackbarResult.ActionPerformed ->
                                 snackbarHostState.showSnackbar("你点了「撤销」")
+
                             SnackbarResult.Dismissed -> Unit
                         }
                     }
@@ -85,11 +86,10 @@ fun RememberCoroutineScopeDemo(modifier: Modifier = Modifier) {
             SectionTitle("手动控制协程生命周期")
             Note(
                 "点「开始」用 scope.launch 起一个每秒 +1 的协程并记住它的 Job；点「取消」调用 job.cancel()。" +
-                    "这体现了 rememberCoroutineScope 的第二用途：手动掌控协程的启停（如用户交互即取消动画）。",
+                        "这体现了 rememberCoroutineScope 的第二用途：手动掌控协程的启停（如用户交互即取消动画）。",
             )
             ButtonRow {
                 DemoButton(text = "开始计数", enabled = job?.isActive != true) {
-                    counter = 0
                     job = scope.launch {
                         while (true) {
                             delay(1000.milliseconds)
@@ -99,6 +99,7 @@ fun RememberCoroutineScopeDemo(modifier: Modifier = Modifier) {
                 }
                 DemoButton(text = "取消计数", enabled = job?.isActive == true) {
                     job?.cancel()
+                    job = null
                 }
             }
             Readout("计数：$counter　协程活跃：${job?.isActive == true}")
@@ -120,8 +121,8 @@ fun RememberCoroutineScopeDemo(modifier: Modifier = Modifier) {
             SectionTitle("要点")
             Text(
                 text = "• 回调（onClick/onChange 等）里要跑协程 → rememberCoroutineScope；composable 体内自动跑的 → LaunchedEffect。\n" +
-                    "• scope 绑定调用点的组合位置，离开组合自动取消，不会泄漏。\n" +
-                    "• 需要手动 cancel（如打断动画）时，保存 launch 返回的 Job 再取消。",
+                        "• scope 绑定调用点的组合位置，离开组合自动取消，不会泄漏。\n" +
+                        "• 需要手动 cancel（如打断动画）时，保存 launch 返回的 Job 再取消。",
                 style = MaterialTheme.typography.bodySmall,
                 modifier = Modifier.padding(horizontal = 16.dp, vertical = 6.dp),
             )
