@@ -33,7 +33,6 @@ import kotlin.math.abs
 
 /**
  * 示例①：operator —— 运算符重载。
- *
  * 一句话：`operator` 修饰的函数让「自定义类型」也能用上 `+ - * / [] < > in ..` 这些符号，
  * 编译器会把符号翻译成对应的函数调用（`a + b` → `a.plus(b)`，`a[i]` → `a.get(i)`）。
  *

@@ -71,20 +71,6 @@ private fun crossInlineLog(): List<String> {
     return out
 }
 
-class TreeNode {
-    var parent : TreeNode? = null
-}
-
-inline fun <reified T> TreeNode.findParentOfType() : T? {
-    var p = parent
-    while (p != null && p !is T) {
-        p = parent
-    }
-    @Suppress("UNCHECKED_CAST")
-    return p as T?
-}
-
-
 @Composable
 fun LambdaModifiersDemo(modifier: Modifier = Modifier) {
     val queue = remember { mutableListOf<() -> String>() }

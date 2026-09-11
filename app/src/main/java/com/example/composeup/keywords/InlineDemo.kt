@@ -66,7 +66,7 @@ fun InlineDemo(modifier: Modifier = Modifier) {
 
     val reifiedLines = remember {
         listOf(
-            "inline fun <reified T> describe(v: T) = \"\${T::class.simpleName} = \$v\"",
+            $$"inline fun <reified T> describe(v: T) = \"${T::class.simpleName} = $v\"",
             "  describe(42)           -> ${describe(42)}",
             "  describe(\"文字\")        -> ${describe("文字")}",
             "  describe(3.14)         -> ${describe(3.14)}",
