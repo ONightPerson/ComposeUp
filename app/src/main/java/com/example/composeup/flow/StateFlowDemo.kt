@@ -10,7 +10,6 @@ import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -18,17 +17,23 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.conflate
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlin.time.Duration.Companion.milliseconds
 
 /**
  * 示例③：StateFlow —— 持有「当前状态」的热流，UI 状态管理的主力。
@@ -53,8 +58,8 @@ fun StateFlowDemo(modifier: Modifier = Modifier) {
     val model = remember { DownloadModel(scope) }
 
     // 把 StateFlow 收集成 Compose 状态：值一变即触发重组（生命周期安全版见示例⑥）。
-    val state by model.state.collectAsState()
-    val elapsed by model.elapsedSeconds.collectAsState()
+    val state by model.state.collectAsStateWithLifecycle()
+    val elapsed by model.elapsedSeconds.collectAsStateWithLifecycle()
     var snapshot by remember { mutableStateOf("（点按钮同步读 .value）") }
 
     Column(
@@ -148,7 +153,7 @@ private data class DownloadState(
 private fun ticker() = flow {
     var s = 0
     while (true) {
-        delay(1000)
+        delay(1000.milliseconds)
         emit(++s)
     }
 }
@@ -174,7 +179,7 @@ private class DownloadModel(private val scope: CoroutineScope) {
             _state.update { it.copy(status = "下载中", running = true) }
             val from = _state.value.progress
             for (p in (from + 1)..100) {
-                delay(50)
+                delay(50.milliseconds)
                 _state.update { it.copy(progress = p) }
             }
             _state.update { it.copy(status = "完成", running = false) }

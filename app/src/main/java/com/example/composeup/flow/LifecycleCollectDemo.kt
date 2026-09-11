@@ -12,6 +12,7 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -25,12 +26,14 @@ import androidx.lifecycle.repeatOnLifecycle
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import androidx.lifecycle.compose.currentStateAsState
+import kotlin.time.Duration.Companion.milliseconds
 
 /** 每 500ms +1 的冷流，模拟「持续推送的数据源」（时钟 / 定位 / 行情）。 */
 private fun tickFlow(): Flow<Int> = flow {
     var i = 0
     while (true) {
-        delay(500)
+        delay(500.milliseconds)
         emit(++i)
     }
 }
@@ -65,7 +68,7 @@ fun LifecycleCollectDemo(modifier: Modifier = Modifier) {
     val naiveTick by remember { tickFlow() }.collectAsState(initial = 0)
 
     // (3) 手动 repeatOnLifecycle：进入 STARTED 启动收集，低于 STARTED 取消，回来再重启。
-    var manualTick by remember { mutableStateOf(0) }
+    var manualTick by remember { mutableIntStateOf(0) }
     LaunchedEffect(lifecycleOwner) {
         lifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
             // 这个 block 会在每次达到 STARTED 时重新启动、跌破时取消，所以要放「幂等」的收集逻辑。
@@ -109,7 +112,7 @@ fun LifecycleCollectDemo(modifier: Modifier = Modifier) {
                     color = MaterialTheme.colorScheme.error,
                 )
                 Text(
-                    text = "当前生命周期：${lifecycleOwner.lifecycle.currentState}",
+                    text = "当前生命周期：${lifecycleOwner.lifecycle.currentStateAsState().value}",
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )

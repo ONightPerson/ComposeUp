@@ -4,6 +4,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
+import kotlin.time.Duration.Companion.milliseconds
 
 /**
  * 本模块各示例共享的「假数据源」。
@@ -40,7 +41,7 @@ internal val ALL_ARTICLES: List<String> = listOf(
  */
 internal fun articleFeed(): Flow<String> = flow {
     ALL_ARTICLES.take(5).forEachIndexed { index, title ->
-        delay(400)                 // 模拟逐条到达的网络延迟
+        delay(400.milliseconds)                 // 模拟逐条到达的网络延迟
         emit("第 ${index + 1} 条：$title")
     }
 }
@@ -53,7 +54,7 @@ internal fun articleFeed(): Flow<String> = flow {
  * 这就是搜索框「输入即搜、不闪烁、不堆积过期请求」的核心机制。
  */
 internal fun searchArticles(query: String): Flow<List<String>> = flow {
-    delay(500) // 模拟检索耗时；若期间来了新查询，flatMapLatest 会让这次执行被取消
+    delay(500.milliseconds) // 模拟检索耗时；若期间来了新查询，flatMapLatest 会让这次执行被取消
     val result = if (query.isBlank()) {
         ALL_ARTICLES.take(4)
     } else {
@@ -70,7 +71,7 @@ internal fun searchArticles(query: String): Flow<List<String>> = flow {
  */
 internal fun sensorStream(intervalMs: Long = 50L, count: Int = 20): Flow<Int> = flow {
     repeat(count) { i ->
-        delay(intervalMs)
+        delay(intervalMs.milliseconds)
         emit(i + 1)
     }
 }

@@ -9,6 +9,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -24,6 +25,7 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.conflate
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+import kotlin.time.Duration.Companion.milliseconds
 
 /** 背压策略：生产者（每 50ms 一个）远快于消费者（每个处理 150ms）时的四种应对。 */
 private enum class BackpressureMode(val label: String, val explain: String) {
@@ -66,8 +68,8 @@ fun BackpressureDemo(modifier: Modifier = Modifier) {
     var mode by rememberSaveable { mutableStateOf(BackpressureMode.DEFAULT) }
     var job by remember { mutableStateOf<Job?>(null) }
     var running by remember { mutableStateOf(false) }
-    var produced by remember { mutableStateOf(0) }
-    var consumed by remember { mutableStateOf(0) }
+    var produced by remember { mutableIntStateOf(0) }
+    var consumed by remember { mutableIntStateOf(0) }
     var logs by remember { mutableStateOf<List<String>>(emptyList()) }
 
     fun log(line: String) {
@@ -86,18 +88,18 @@ fun BackpressureDemo(modifier: Modifier = Modifier) {
             val base = sensorStream(intervalMs = 50, count = 20).onEach { produced++ }
             when (mode) {
                 BackpressureMode.DEFAULT ->
-                    base.collect { delay(150); consumed++ }
+                    base.collect { delay(150.milliseconds); consumed++ }
 
                 BackpressureMode.BUFFER ->
                     base.buffer(capacity = 4, onBufferOverflow = BufferOverflow.DROP_OLDEST)
-                        .collect { delay(150); consumed++ }
+                        .collect { delay(150.milliseconds); consumed++ }
 
                 BackpressureMode.CONFLATE ->
                     base.conflate()
-                        .collect { delay(150); consumed++ }
+                        .collect { delay(150.milliseconds); consumed++ }
 
                 BackpressureMode.COLLECT_LATEST ->
-                    base.collectLatest { delay(150); consumed++ }
+                    base.collectLatest { delay(150.milliseconds); consumed++ }
             }
             running = false
             log("■ 结束：生产 $produced 个 / 消费 $consumed 个")

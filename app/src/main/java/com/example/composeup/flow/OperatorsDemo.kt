@@ -11,24 +11,28 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.combineTransform
+import kotlinx.coroutines.flow.conflate
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.onEach
 import kotlin.random.Random
+import kotlin.time.Duration.Companion.milliseconds
 
 /**
  * 示例②：操作符 —— 把「一条流」变换成「另一条流」，并用真实**搜索框**串起来。
@@ -46,19 +50,21 @@ import kotlin.random.Random
  *
  * 下半部分再用 **combine** 合并两条独立变化的流（价格 × 汇率），体会它「各取最新值」的语义。
  */
-@OptIn(ExperimentalCoroutinesApi::class, FlowPreview::class)
+@OptIn(FlowPreview::class, ExperimentalCoroutinesApi::class)
 @Composable
 fun OperatorsDemo(modifier: Modifier = Modifier) {
     // 用 MutableStateFlow 承载输入，方便把「文本变化」当成一条流来接操作符。
     val queryFlow = remember { MutableStateFlow("") }
-    val query by queryFlow.collectAsState()
+    val query by queryFlow.collectAsStateWithLifecycle()
     var results by remember { mutableStateOf<List<String>>(emptyList()) }
     var searchStatus by remember { mutableStateOf("等待输入…") }
+
+    val flow = (1..30).asFlow().conflate()
 
     // 搜索管线：界面进入组合时启动，离开时自动取消（LaunchedEffect 的生命周期）。
     LaunchedEffect(Unit) {
         queryFlow
-            .debounce(300)                         // 停止输入 300ms 才往下走
+            .debounce(300.milliseconds)                         // 停止输入 300ms 才往下走
             .distinctUntilChanged()                // 与上一次相同则跳过
             .onEach { q ->
                 searchStatus = if (q.isBlank()) "空查询：展示推荐" else "检索中：$q …"
@@ -76,15 +82,21 @@ fun OperatorsDemo(modifier: Modifier = Modifier) {
         val prices = flow {
             var p = 100
             while (true) {
-                delay(700); p += Random.nextInt(-5, 6); emit(p)
+                delay(700.milliseconds); p += Random.nextInt(-5, 6); emit(p)
             }
         }
         val rates = flow {
             var r = 7.00
             while (true) {
-                delay(1100); r += Random.nextDouble(-0.10, 0.10); emit(r)
+                delay(1100.milliseconds); r += Random.nextDouble(-0.10, 0.10); emit(r)
             }
         }
+//        prices.combineTransform(rates) { p, r ->
+//            emit("价格 $p × 汇率 ${"%.2f".format(r)} = ${"%.2f".format(p * r)}")
+//        }.collect { combineOut = it }
+//        combine(prices, rates) {
+//                p, r -> "价格 $p × 汇率 ${"%.2f".format(r)} = ${"%.2f".format(p * r)}"
+//        }.collect { combineOut = it }
         prices.combine(rates) { p, r ->
             "价格 $p × 汇率 ${"%.2f".format(r)} = ${"%.2f".format(p * r)}"
         }.collect { combineOut = it }
@@ -98,7 +110,7 @@ fun OperatorsDemo(modifier: Modifier = Modifier) {
         SectionTitle("实时搜索：debounce + distinctUntilChanged + flatMapLatest")
         Note(
             "在下方输入关键词（如「Compose」「Flow」「状态」）。快速连打时不会每次都检索——" +
-                "debounce 等你停顿 300ms；输入没变化不重复检索；新关键词会取消上一次的过期检索。",
+                    "debounce 等你停顿 300ms；输入没变化不重复检索；新关键词会取消上一次的过期检索。",
         )
         OutlinedTextField(
             value = query,
@@ -157,8 +169,8 @@ fun OperatorsDemo(modifier: Modifier = Modifier) {
         SectionTitle("combine vs zip：最容易混的一对")
         Text(
             text = "• combine：任一条流发新值，就用「两边各自的最新值」重新组合，适合聚合多个 UI 状态源；\n" +
-                "• zip：严格按顺序一一配对，第 n 个只和第 n 个组合，某条流结束则整体结束，适合「成对」数据；\n" +
-                "• flatMapLatest 是搜索/详情页的灵魂：它保证「只处理最新输入」，旧请求被自动取消，不堆积、不闪烁。",
+                    "• zip：严格按顺序一一配对，第 n 个只和第 n 个组合，某条流结束则整体结束，适合「成对」数据；\n" +
+                    "• flatMapLatest 是搜索/详情页的灵魂：它保证「只处理最新输入」，旧请求被自动取消，不堆积、不闪烁。",
             style = MaterialTheme.typography.bodySmall,
             modifier = Modifier.padding(horizontal = 16.dp, vertical = 6.dp),
         )

@@ -157,16 +157,16 @@ fun FlowHub(modifier: Modifier = Modifier) {
             )
         },
     ) { innerPadding ->
-        val contentModifier = Modifier
+        val modifier = Modifier
             .fillMaxSize()
             .padding(innerPadding)
         when (current) {
-            FlowTopic.ColdFlow -> ColdFlowDemo(contentModifier)
-            FlowTopic.Operators -> OperatorsDemo(contentModifier)
-            FlowTopic.StateFlow -> StateFlowDemo(contentModifier)
-            FlowTopic.SharedFlow -> SharedFlowDemo(contentModifier)
-            FlowTopic.Backpressure -> BackpressureDemo(contentModifier)
-            FlowTopic.Lifecycle -> LifecycleCollectDemo(contentModifier)
+            FlowTopic.ColdFlow -> ColdFlowDemo(modifier)
+            FlowTopic.Operators -> OperatorsDemo(modifier)
+            FlowTopic.StateFlow -> StateFlowDemo(modifier)
+            FlowTopic.SharedFlow -> SharedFlowDemo(modifier)
+            FlowTopic.Backpressure -> BackpressureDemo(modifier)
+            FlowTopic.Lifecycle -> LifecycleCollectDemo(modifier)
         }
     }
 }

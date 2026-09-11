@@ -17,12 +17,14 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.foundation.layout.padding
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.launch
+import kotlin.time.Duration.Companion.milliseconds
 
 /**
  * 示例④：SharedFlow —— 可配置 replay 缓存的事件热流。
@@ -54,7 +56,7 @@ fun SharedFlowDemo(modifier: Modifier = Modifier) {
         )
     }
     var eventLog by remember { mutableStateOf<List<String>>(emptyList()) }
-    var eventSeq by remember { mutableStateOf(0) }
+    var eventSeq by remember { mutableIntStateOf(0) }
 
     // 一个常驻订阅者，模拟 UI 层消费事件（此处仅打日志，真实项目里会弹 Snackbar / 触发导航）。
     LaunchedEffect(Unit) {
@@ -64,7 +66,7 @@ fun SharedFlowDemo(modifier: Modifier = Modifier) {
     }
 
     // ---------- 第二段：replay 缓存对比 ----------
-    var replay by rememberSaveable { mutableStateOf(1) }
+    var replay by rememberSaveable { mutableIntStateOf(1) }
     val subJobs = remember { mutableStateListOf<Job>() }
     // replay 改变时用 remember(replay) 重建一条新流，相关计数/日志一并重置。
     val shared = remember(replay) {
@@ -75,8 +77,8 @@ fun SharedFlowDemo(modifier: Modifier = Modifier) {
         )
     }
     var bLog by remember(replay) { mutableStateOf<List<String>>(emptyList()) }
-    var bEmit by remember(replay) { mutableStateOf(0) }
-    var bSubs by remember(replay) { mutableStateOf(0) }
+    var bEmit by remember(replay) { mutableIntStateOf(0) }
+    var bSubs by remember(replay) { mutableIntStateOf(0) }
 
     // 切换 replay 时，取消挂在旧流上的所有订阅者，避免遗留收集协程。
     LaunchedEffect(replay) {
@@ -104,7 +106,7 @@ fun SharedFlowDemo(modifier: Modifier = Modifier) {
                     repeat(3) {
                         eventSeq++
                         events.tryEmit("Event#$eventSeq")
-                        delay(60)
+                        delay(60.milliseconds)
                     }
                 }
             }
