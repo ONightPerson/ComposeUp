@@ -110,7 +110,7 @@ private fun ExpandableCard() {
 private fun AnimatedList(modifier: Modifier = Modifier) {
     // 用 mutableStateListOf 保存「自增 id」，删除 / 打乱时以 id 作为 key，动画才能正确识别是哪一项。
     val items = rememberSaveable(
-        saver = listSaver<SnapshotStateList<Int>, Int>(
+        saver = listSaver(
             save = { it.toList() },
             restore = { it.toMutableStateList() },
         ),

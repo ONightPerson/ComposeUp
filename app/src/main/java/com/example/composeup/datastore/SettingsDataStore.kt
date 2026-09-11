@@ -55,20 +55,8 @@ class SettingsRepository(private val context: Context) {
         val DARK_MODE = booleanPreferencesKey("dark_mode")
         val FONT_SIZE = intPreferencesKey("font_size")
         val USERNAME = stringPreferencesKey("username")
-        val COMPLETED_ONBOARDING = booleanPreferencesKey("completed_onboarding")
         val LAUNCH_COUNT = intPreferencesKey("launch_count")
     }
-
-    // ===== 场景 1：读取用户设置（响应式，返回 Flow）=====
-    // data 是 Flow<Preferences>：磁盘值一旦变化就发出新值；用 ?: 提供「没存过时」的默认值。
-    val isDarkMode: Flow<Boolean> = context.settingsDataStore.data
-        .map { prefs -> prefs[Keys.DARK_MODE] ?: false }
-
-    val fontSize: Flow<Int> = context.settingsDataStore.data
-        .map { prefs -> prefs[Keys.FONT_SIZE] ?: 14 }
-
-    val username: Flow<String> = context.settingsDataStore.data
-        .map { prefs -> prefs[Keys.USERNAME] ?: "游客" }
 
     // ===== 场景 2：写入设置（事务化 edit，suspend）=====
     // edit { } 内部拿到的是当前 Preferences 的可变副本，改完原子写回；抛异常则整体回滚。
@@ -84,15 +72,6 @@ class SettingsRepository(private val context: Context) {
         context.settingsDataStore.edit { prefs -> prefs[Keys.USERNAME] = name }
     }
 
-    // ===== 场景 3：首次启动 / 引导页标记 =====
-    // 经典需求：判断用户是否看过引导页，从而决定进 App 先展示引导还是主界面。
-    val hasCompletedOnboarding: Flow<Boolean> = context.settingsDataStore.data
-        .map { prefs -> prefs[Keys.COMPLETED_ONBOARDING] ?: false }
-
-    suspend fun completeOnboarding() {
-        context.settingsDataStore.edit { prefs -> prefs[Keys.COMPLETED_ONBOARDING] = true }
-    }
-
     // ===== 场景 4：基于当前值做「原子」自增（计数器）=====
     // edit 里能读到最新值再改写，天然避免并发竞态——这是 SP 的 getX + putX 两步写法难以保证的。
     suspend fun increaseLaunchCount() {
@@ -101,9 +80,6 @@ class SettingsRepository(private val context: Context) {
             prefs[Keys.LAUNCH_COUNT] = current + 1
         }
     }
-
-    val launchCount: Flow<Int> = context.settingsDataStore.data
-        .map { prefs -> prefs[Keys.LAUNCH_COUNT] ?: 0 }
 
     // ===== 场景 5：聚合多个偏好成一个 UI 状态对象 =====
     // 一次 data 流映射出整个界面的状态，Compose 直接消费，避免为每个字段单独 collect。

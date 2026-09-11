@@ -54,7 +54,7 @@ private enum class AnimationTopic(
     SizeAndList(
         title = "④ animateContentSize + 列表增删动画",
         summary = "内容尺寸变化时自动补间（可展开卡片）；LazyColumn 里用 Modifier.animateItem 让" +
-            "新增 / 删除 / 重排都有淡入淡出与位移过渡（必须提供 key）。",
+            " 新增 / 删除 / 重排都有淡入淡出与位移过渡（必须提供 key）。",
         keywords = "animateContentSize · LazyItemScope.animateItem · mutableStateListOf · key",
     ),
     Specs(
