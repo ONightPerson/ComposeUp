@@ -38,6 +38,7 @@ import androidx.compose.material.icons.filled.SwapVert
 import androidx.compose.material.icons.filled.Sync
 import androidx.compose.material.icons.filled.Timeline
 import androidx.compose.material.icons.filled.Videocam
+import androidx.compose.material.icons.filled.Restore
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -77,6 +78,7 @@ import com.example.composeup.datastore.SettingsScreen
 import com.example.composeup.flow.FlowHub
 import com.example.composeup.keywords.KeywordsHub
 import com.example.composeup.nestedscroll.NestedScrollHub
+import com.example.composeup.remember.RememberHub
 import com.example.composeup.screenrecord.ScreenRecordHub
 import com.example.composeup.sideeffects.SideEffectsHub
 import com.example.composeup.ui.theme.ComposeUpTheme
@@ -107,6 +109,7 @@ private enum class Destination(
     SideEffects("Compose 副作用", "LaunchedEffect / DisposableEffect / SideEffect / produceState / derivedStateOf / snapshotFlow 等", Filled.Sync),
     Settings("DataStore 设置页", "用 Preferences DataStore 持久化开关与文本设置", Filled.Settings),
     ScreenRecord("录屏演示", "Android 12+ 录屏功能，支持媒体库同步与管理", Filled.Videocam),
+    Remember("Remember 全家桶", "remember / saveable / Saver / Retain 状态持久化与生存期", Filled.Restore),
 }
 
 /**
@@ -139,6 +142,7 @@ private fun ComposeUpRoot() {
                 Destination.SideEffects -> SideEffectsHub(contentModifier)
                 Destination.Settings -> SettingsScreen(contentModifier)
                 Destination.ScreenRecord -> ScreenRecordHub(contentModifier)
+                Destination.Remember -> RememberHub(contentModifier)
             }
         }
     }
