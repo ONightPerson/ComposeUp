@@ -159,6 +159,31 @@ internal fun DemoButton(
     }
 }
 
+/** 一组单选 Chip */
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+internal fun <T> OptionChips(
+    options: List<Pair<T, String>>,
+    selected: T,
+    onSelect: (T) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    FlowRow(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 8.dp),
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+    ) {
+        options.forEach { (value, label) ->
+            FilterChip(
+                selected = value == selected,
+                onClick = { onSelect(value) },
+                label = { Text(label) },
+            )
+        }
+    }
+}
+
 /** 只读的数值展示行。 */
 @Composable
 internal fun Readout(text: String, modifier: Modifier = Modifier) {

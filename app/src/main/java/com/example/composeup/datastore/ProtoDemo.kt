@@ -22,8 +22,12 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.composeup.datastore.data.repository.ProtoRepository
 import com.example.composeup.datastore.ui.viewmodel.ProtoViewModel
 
+private enum class SerializerType {
+    Kotlinx, Gson, Moshi, Protobuf
+}
+
 /**
- * 示例②：Proto DataStore —— 结构化对象存储（分层架构版）
+ * 示例②：Typed DataStore —— 强类型对象存储（多 Serializer 实现版）
  */
 @Composable
 fun ProtoDemo(modifier: Modifier = Modifier) {
@@ -40,8 +44,12 @@ fun ProtoDemo(modifier: Modifier = Modifier) {
         }
     )
 
-    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    var logText by remember { mutableStateOf("就绪：当前正在通过 ViewModel 观察磁盘强类型对象流。") }
+    var selectedType by remember { mutableStateOf(SerializerType.Kotlinx) }
+
+    val kotlinxState by viewModel.kotlinxState.collectAsStateWithLifecycle()
+    val gsonState by viewModel.gsonState.collectAsStateWithLifecycle()
+    val moshiState by viewModel.moshiState.collectAsStateWithLifecycle()
+    val trueProtoState by viewModel.trueProtoState.collectAsStateWithLifecycle()
 
     Column(
         modifier = modifier
@@ -49,72 +57,111 @@ fun ProtoDemo(modifier: Modifier = Modifier) {
             .verticalScroll(rememberScrollState()),
     ) {
         Note(
-            "Proto DataStore 能够以强类型对象形式在流中直接对结构体进行管理。在此分层架构中，" +
-                "Repository 负责 Serializer 的具体实现与文件路径管理，ViewModel 负责状态转换。",
+            "Typed DataStore (Proto DataStore) 支持多种序列化实现。你可以选择原生的 Protobuf，" +
+                "也可以使用 JSON 库（如 Kotlinx, Gson, Moshi）配合自定义 Serializer 来实现强类型存储。",
         )
 
-        SectionTitle("真实强类型对象状态（ViewModel 驱动）")
+        SectionTitle("选择序列化器实现方案")
+        OptionChips(
+            options = SerializerType.entries.map { it to it.name },
+            selected = selectedType,
+            onSelect = { selectedType = it }
+        )
+
+        SectionTitle("当前实现：${selectedType.name}")
         Stage(height = 150.dp) {
             Column(horizontalAlignment = androidx.compose.ui.Alignment.CenterHorizontally) {
-                Text(
-                    text = "账户级别：${uiState.level} (强类型)",
-                    style = MaterialTheme.typography.titleMedium,
-                    color = MaterialTheme.colorScheme.primary,
-                )
-                Text(
-                    text = "最近登录：${uiState.lastLoginIp}",
-                    style = MaterialTheme.typography.bodyLarge,
-                )
-                Text(
-                    text = "标签列表：${uiState.tags.joinToString(", ")}",
-                    style = MaterialTheme.typography.bodyMedium,
-                )
+                when (selectedType) {
+                    SerializerType.Kotlinx -> {
+                        ProfileDisplay(level = kotlinxState.level, ip = kotlinxState.lastLoginIp)
+                    }
+                    SerializerType.Gson -> {
+                        ProfileDisplay(level = gsonState.level, ip = gsonState.lastLoginIp)
+                    }
+                    SerializerType.Moshi -> {
+                        ProfileDisplay(level = moshiState.level, ip = moshiState.lastLoginIp)
+                    }
+                    SerializerType.Protobuf -> {
+                        ProfileDisplay(level = "PROTO", ip = trueProtoState.username) // 使用 username 字段演示
+                        Text(text = "(字段映射: Protobuf.username -> Display.IP)", style = MaterialTheme.typography.labelSmall)
+                    }
+                }
             }
         }
-
-        Readout(logText)
 
         ButtonRow {
-            DemoButton(text = "升级为 VIP") {
-                viewModel.updateLevel("VIP")
-                logText = "Action: updateLevel('VIP') 提交给 ViewModel。"
+            DemoButton(text = "更新 Level (VIP)") {
+                when (selectedType) {
+                    SerializerType.Kotlinx -> viewModel.updateKotlinxLevel("VIP")
+                    SerializerType.Gson -> viewModel.updateGsonLevel("VIP")
+                    SerializerType.Moshi -> viewModel.updateMoshiLevel("VIP")
+                    SerializerType.Protobuf -> viewModel.updateProtoUsername("VIP")
+                }
             }
-            DemoButton(text = "添加标签 'Layered'") {
-                viewModel.addTag("Layered")
-                logText = "Action: addTag('Layered') 已发送。"
-            }
-            DemoButton(text = "重置档案") {
-                viewModel.resetProfile()
-                logText = "Action: resetProfile() 已发送。"
+            DemoButton(text = "重置为 Regular") {
+                when (selectedType) {
+                    SerializerType.Kotlinx -> viewModel.updateKotlinxLevel("REGULAR")
+                    SerializerType.Gson -> viewModel.updateGsonLevel("REGULAR")
+                    SerializerType.Moshi -> viewModel.updateMoshiLevel("REGULAR")
+                    SerializerType.Protobuf -> viewModel.updateProtoUsername("Default_Proto")
+                }
             }
         }
 
-        SectionTitle("Proto DataStore 架构要点")
+        SectionTitle("多方案 Serializer 实现对比")
         CodeBlock(
-            """
-            // 1. Data Model (Serializable)
-            @Serializable data class UserProfile(...)
-
-            // 2. Repository: 封装 DataStoreFactory 与 Serializer
-            class ProtoRepository(context: Context) {
-                private val dataStore = DataStoreFactory.create(
-                    serializer = UserProfileSerializer, ...
-                )
+            when (selectedType) {
+                SerializerType.Kotlinx -> """
+                    // Kotlinx.serialization 实现
+                    object KotlinxSerializer : Serializer<UserProfile> {
+                        override suspend fun readFrom(input: InputStream) = 
+                            Json.decodeFromString<UserProfile>(input.readBytes().decodeToString())
+                    }
+                """.trimIndent()
+                SerializerType.Gson -> """
+                    // Gson 实现
+                    object GsonSerializer : Serializer<UserProfile> {
+                        override suspend fun readFrom(input: InputStream) = 
+                            gson.fromJson(input.readBytes().decodeToString(), UserProfile::class.java)
+                    }
+                """.trimIndent()
+                SerializerType.Moshi -> """
+                    // Moshi 实现
+                    object MoshiSerializer : Serializer<UserProfile> {
+                        override suspend fun readFrom(input: InputStream) = 
+                            moshiAdapter.fromJson(input.readBytes().decodeToString())
+                    }
+                """.trimIndent()
+                SerializerType.Protobuf -> """
+                    // 原生 Protobuf 实现 (官方标准)
+                    object ProtoSerializer : Serializer<UserSettingsProto> {
+                        override suspend fun readFrom(input: InputStream) = 
+                            UserSettingsProto.parseFrom(input)
+                    }
+                """.trimIndent()
             }
-
-            // 3. ViewModel: 将 DataStore Flow 转为 StateFlow
-            class ProtoViewModel(repo: ProtoRepository) : ViewModel() {
-                val uiState = repo.userProfileFlow.stateIn(...)
-            }
-            """.trimIndent(),
         )
 
-        SectionTitle("避坑与高级特性")
+        SectionTitle("总结")
         Text(
-            text = "• 强类型拦截：Repository 层通过 kotlinx.serialization 保证了读写时字段类型的严丝合缝。\n" +
-                "• 效率：相比 Preferences 的键值对，Proto 在处理包含集合、嵌套对象的复杂模型时，具备极高的二进制序列化效率。",
+            text = "• 原生 Protobuf 是性能最高、最节省空间的方案，也是 DataStore 命名的由来。\n" +
+                "• JSON 方案（Gson/Moshi/Kotlinx）更具可读性，适合调试和对体积不敏感的场景。\n" +
+                "• 无论何种方案，只要实现了 `androidx.datastore.core.Serializer<T>`，就能享受 DataStore 的事务和异步流特性。",
             style = MaterialTheme.typography.bodySmall,
             modifier = Modifier.padding(horizontal = 16.dp, vertical = 6.dp),
         )
     }
+}
+
+@Composable
+private fun ProfileDisplay(level: String, ip: String) {
+    Text(
+        text = "账户级别：$level",
+        style = MaterialTheme.typography.titleMedium,
+        color = MaterialTheme.colorScheme.primary,
+    )
+    Text(
+        text = "内容载荷：$ip",
+        style = MaterialTheme.typography.bodyLarge,
+    )
 }
