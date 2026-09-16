@@ -72,9 +72,9 @@ dependencies {
     implementation(libs.androidx.datastore.preferences)
     implementation(libs.androidx.compose.material.icons.extended)
     implementation(libs.kotlinx.serialization.json)
-    implementation(libs.androidx.room.runtime)
-    implementation(libs.androidx.room.ktx)
-    ksp(libs.androidx.room.compiler)
+    implementation(libs.androidx.room.runtime) // Room 运行时
+    implementation(libs.androidx.room.ktx) // Room 协程支持
+    ksp(libs.androidx.room.compiler) // Room 编译器
     implementation(libs.gson)
     implementation(libs.moshi)
     ksp(libs.moshi.ksp)
