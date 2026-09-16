@@ -74,7 +74,7 @@ import androidx.compose.ui.tooling.preview.AndroidUiModes.UI_MODE_NIGHT_YES
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.composeup.animation.AnimationHub
-import com.example.composeup.datastore.SettingsScreen
+import com.example.composeup.datastore.DatastoreHub
 import com.example.composeup.flow.FlowHub
 import com.example.composeup.keywords.KeywordsHub
 import com.example.composeup.nestedscroll.NestedScrollHub
@@ -110,6 +110,7 @@ private enum class Destination(
     Settings("DataStore 设置页", "用 Preferences DataStore 持久化开关与文本设置", Filled.Settings),
     ScreenRecord("录屏演示", "Android 12+ 录屏功能，支持媒体库同步与管理", Filled.Videocam),
     Remember("Remember 全家桶", "remember / saveable / Saver / Retain 状态持久化与生存期", Filled.Restore),
+    DataStore("存储选型全家桶", "Preferences / Proto DataStore 与 Room 选型、应用场景对比演练", Filled.Settings),
 }
 
 /**
@@ -140,9 +141,10 @@ private fun ComposeUpRoot() {
                 Destination.Keywords -> KeywordsHub(contentModifier)
                 Destination.Flow -> FlowHub(contentModifier)
                 Destination.SideEffects -> SideEffectsHub(contentModifier)
-                Destination.Settings -> SettingsScreen(contentModifier)
+                Destination.Settings -> DatastoreHub(contentModifier)
                 Destination.ScreenRecord -> ScreenRecordHub(contentModifier)
                 Destination.Remember -> RememberHub(contentModifier)
+                Destination.DataStore -> DatastoreHub(contentModifier)
             }
         }
     }
