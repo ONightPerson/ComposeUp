@@ -4,6 +4,8 @@ import androidx.datastore.core.CorruptionException
 import androidx.datastore.core.Serializer
 import com.example.composeup.datastore.data.model.UserSettingsProto
 import com.google.protobuf.InvalidProtocolBufferException
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import java.io.InputStream
 import java.io.OutputStream
 
@@ -19,6 +21,8 @@ object ProtoSettingsSerializer : Serializer<UserSettingsProto> {
     }
 
     override suspend fun writeTo(t: UserSettingsProto, output: OutputStream) {
-        t.writeTo(output)
+        withContext(Dispatchers.IO) {
+            t.writeTo(output)
+        }
     }
 }

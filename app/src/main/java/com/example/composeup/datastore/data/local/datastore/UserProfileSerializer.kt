@@ -2,6 +2,8 @@ package com.example.composeup.datastore.data.local.datastore
 
 import androidx.datastore.core.Serializer
 import com.example.composeup.datastore.data.model.UserProfile
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
 import java.io.InputStream
 import java.io.OutputStream
@@ -36,13 +38,15 @@ object UserProfileSerializer : Serializer<UserProfile> {
             val bytes = input.readBytes()
             if (bytes.isEmpty()) return defaultValue
             Json.decodeFromString<UserProfile>(bytes.decodeToString())
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             defaultValue
         }
     }
 
     override suspend fun writeTo(t: UserProfile, output: OutputStream) {
         val string = Json.encodeToString(UserProfile.serializer(), t)
-        output.write(string.encodeToByteArray())
+        withContext(Dispatchers.IO) {
+            output.write(string.encodeToByteArray())
+        }
     }
 }

@@ -44,6 +44,7 @@ gson = { group = "com.google.code.gson", name = "gson", version.ref = "gson" }
 moshi = { group = "com.squareup.moshi", name = "moshi-kotlin", version.ref = "moshi" }
 moshi-ksp = { group = "com.squareup.moshi", name = "moshi-kotlin-codegen", version.ref = "moshi" }
 protobuf-kotlin-lite = { group = "com.google.protobuf", name = "protobuf-kotlin-lite", version.ref = "protobuf" }
+#noinspection UnusedVersionCatalogEntry
 protobuf-protoc = { group = "com.google.protobuf", name = "protoc", version.ref = "protobuf" }
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

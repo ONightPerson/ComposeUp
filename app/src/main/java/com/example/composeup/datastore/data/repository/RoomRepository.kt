@@ -9,7 +9,7 @@ class RoomRepository(context: Context) {
     private val database = AppDatabase.getDatabase(context)
     private val productDao = database.productDao()
 
-    val allProductsFlow: Flow<List<ProductEntity>> = productDao.getAllProductsFlow()
+//    val allProductsFlow: Flow<List<ProductEntity>> = productDao.getAllProductsFlow()
 
     fun getProductsByCategoryFlow(category: String): Flow<List<ProductEntity>> {
         return if (category.isEmpty()) {
