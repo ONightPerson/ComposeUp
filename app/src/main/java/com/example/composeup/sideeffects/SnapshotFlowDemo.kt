@@ -54,7 +54,7 @@ fun SnapshotFlowDemo(modifier: Modifier = Modifier) {
         snapshotFlow { listState.firstVisibleItemIndex }
             .map { index -> index > 0 }
             .distinctUntilChanged()
-            .filter { it == true }
+            .filter { it }
             .collect {
                 FakeAnalytics.logEvent("滚动越过首项（scrolledPastFirstItem）")
             }
