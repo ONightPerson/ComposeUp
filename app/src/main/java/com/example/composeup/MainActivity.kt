@@ -1,5 +1,6 @@
 package com.example.composeup
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
@@ -55,6 +56,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -66,6 +68,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -79,6 +82,7 @@ import com.example.composeup.compositionlocal.LocalHub
 import com.example.composeup.datastore.DatastoreHub
 import com.example.composeup.flow.FlowHub
 import com.example.composeup.keywords.KeywordsHub
+import com.example.composeup.navigation3.Nav3Activity
 import com.example.composeup.nestedscroll.NestedScrollHub
 import com.example.composeup.remember.RememberHub
 import com.example.composeup.screenrecord.ScreenRecordHub
@@ -114,6 +118,7 @@ private enum class Destination(
     Remember("Remember 全家桶", "remember / saveable / Saver / Retain 状态持久化与生存期", Filled.Restore),
     DataStore("存储选型全家桶", "Preferences / Proto DataStore 与 Room 选型、应用场景对比演练", Filled.Settings),
     Local("CompositionLocal 专家级", "跨层级状态传递：权限、语言切换、主题扩展、埋点上下文", Filled.Layers),
+    Navigation3("Jetpack Navigation 3", "保存状态、结果回传、定制 Metadata 独立动画、大屏 Scenes、Deep Links", Icons.Default.Code),
 }
 
 /**
@@ -149,6 +154,11 @@ private fun ComposeUpRoot() {
                 Destination.Remember -> RememberHub(contentModifier)
                 Destination.DataStore -> DatastoreHub(contentModifier)
                 Destination.Local -> LocalHub(contentModifier)
+                Destination.Navigation3 -> {
+                    val context = LocalContext.current
+                    context.startActivity(Intent(context, Nav3Activity::class.java))
+                    destination = null
+                }
             }
         }
     }

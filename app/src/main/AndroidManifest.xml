@@ -32,6 +32,19 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <activity
+            android:name=".navigation3.Nav3Activity"
+            android:exported="true"
+            android:theme="@style/Theme.ComposeUp"
+            android:windowSoftInputMode="adjustResize">
+            <intent-filter android:label="Navigation3 Demo">
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="app" android:host="www.composeup.com" />
+            </intent-filter>
+        </activity>
     </application>
 
 </manifest>
