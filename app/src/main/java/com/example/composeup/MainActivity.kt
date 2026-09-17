@@ -38,6 +38,7 @@ import androidx.compose.material.icons.filled.SwapVert
 import androidx.compose.material.icons.filled.Sync
 import androidx.compose.material.icons.filled.Timeline
 import androidx.compose.material.icons.filled.Videocam
+import androidx.compose.material.icons.filled.Layers
 import androidx.compose.material.icons.filled.Restore
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
@@ -74,6 +75,7 @@ import androidx.compose.ui.tooling.preview.AndroidUiModes.UI_MODE_NIGHT_YES
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.composeup.animation.AnimationHub
+import com.example.composeup.compositionlocal.LocalHub
 import com.example.composeup.datastore.DatastoreHub
 import com.example.composeup.flow.FlowHub
 import com.example.composeup.keywords.KeywordsHub
@@ -111,6 +113,7 @@ private enum class Destination(
     ScreenRecord("录屏演示", "Android 12+ 录屏功能，支持媒体库同步与管理", Filled.Videocam),
     Remember("Remember 全家桶", "remember / saveable / Saver / Retain 状态持久化与生存期", Filled.Restore),
     DataStore("存储选型全家桶", "Preferences / Proto DataStore 与 Room 选型、应用场景对比演练", Filled.Settings),
+    Local("CompositionLocal 专家级", "跨层级状态传递：权限、语言切换、主题扩展、埋点上下文", Filled.Layers),
 }
 
 /**
@@ -145,6 +148,7 @@ private fun ComposeUpRoot() {
                 Destination.ScreenRecord -> ScreenRecordHub(contentModifier)
                 Destination.Remember -> RememberHub(contentModifier)
                 Destination.DataStore -> DatastoreHub(contentModifier)
+                Destination.Local -> LocalHub(contentModifier)
             }
         }
     }
