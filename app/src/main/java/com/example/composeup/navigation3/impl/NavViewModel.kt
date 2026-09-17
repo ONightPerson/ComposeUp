@@ -9,18 +9,17 @@ import androidx.lifecycle.ViewModel
  * 作用域绑定到 [androidx.navigation3.runtime.NavEntry] 的 ViewModel。
  * 当与之对应的 Key 被从回退栈中弹出（Pop）清除时，该 ViewModel 会自动触发 onCleared，释放内存与数据。
  */
-public class DetailViewModel : ViewModel() {
+class DetailViewModel : ViewModel() {
     // 页面内部的状态流/状态值
-    public var detailText: String by mutableStateOf("正在加载中...")
+    var detailText: String by mutableStateOf("正在加载中...")
         private set
 
-    public fun loadUserDetail(userId: String) {
+    fun loadUserDetail(userId: String) {
         // 模拟数据加载
         detailText = "成功加载用户 ID 为 $userId 的核心详情信息。本 ViewModel 完全独立作用于此 Entry 节点！"
     }
 
     override fun onCleared() {
-        super.onCleared()
         // 验证生命周期释放
         println("Nav3Demo: DetailViewModel for this NavEntry has been cleared successfully!")
     }

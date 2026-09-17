@@ -59,8 +59,8 @@ class CustomListDetailStrategy<T : Any>(private val isWideScreen: Boolean) : Sce
         )
     }
 
-    public object ListPaneKey : NavMetadataKey<Boolean>
-    public object DetailPaneKey : NavMetadataKey<Boolean>
+    object ListPaneKey : NavMetadataKey<Boolean>
+    object DetailPaneKey : NavMetadataKey<Boolean>
 
     companion object {
         fun listPane() = metadata {
