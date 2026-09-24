@@ -77,6 +77,7 @@ import androidx.compose.ui.tooling.preview.AndroidUiModes.UI_MODE_NIGHT_YES
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.composeup.animation.AnimationHub
+import com.example.composeup.architecture.ArchitectureHub
 import com.example.composeup.compositionlocal.LocalHub
 import com.example.composeup.datastore.DatastoreHub
 import com.example.composeup.flow.FlowHub
@@ -111,6 +112,7 @@ private enum class Destination(
     Animation("动画进阶", "值动画、Transition、进出场、列表增删、AnimationSpec、手势 Animatable", Filled.Animation),
     Keywords("Compose 底层关键字", "operator / infix / invoke / inline / crossinline / noinline", Filled.Code),
     Flow("Flow 全家桶", "Flow / StateFlow / SharedFlow、操作符、背压、生命周期收集，真实案例串联", Filled.Timeline),
+    Architecture("新闻架构实战", "分层架构 / UseCase / Repository / 单向数据流 / 状态归一化", Filled.Layers),
     SideEffects("Compose 副作用", "LaunchedEffect / DisposableEffect / SideEffect / produceState / derivedStateOf / snapshotFlow 等", Filled.Sync),
     Settings("DataStore 设置页", "用 Preferences DataStore 持久化开关与文本设置", Filled.Settings),
     ScreenRecord("录屏演示", "Android 12+ 录屏功能，支持媒体库同步与管理", Filled.Videocam),
@@ -147,6 +149,7 @@ private fun ComposeUpRoot() {
                 Destination.Animation -> AnimationHub(contentModifier)
                 Destination.Keywords -> KeywordsHub(contentModifier)
                 Destination.Flow -> FlowHub(contentModifier)
+                Destination.Architecture -> ArchitectureHub(contentModifier, onExit = { destination = null })
                 Destination.SideEffects -> SideEffectsHub(contentModifier)
                 Destination.Settings -> DatastoreHub(contentModifier)
                 Destination.ScreenRecord -> ScreenRecordHub(contentModifier)
