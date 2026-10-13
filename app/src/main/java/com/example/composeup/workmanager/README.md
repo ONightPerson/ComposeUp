@@ -11,12 +11,12 @@ WorkManager 是 Android 官方推荐的**持久化后台任务调度器**：
 
 依赖版本（本项目实际使用）：
 
-| 依赖 | 版本 | 用途 |
-| --- | --- | --- |
-| `androidx.work:work-runtime-ktx` | `2.12.0` | WorkManager + CoroutineWorker 支持 |
-| Kotlin | `2.4.20` | 协程 / suspend 支持 |
-| Compose BOM | `2026.09.00` | UI 层 |
-| `lifecycle-runtime-compose` | `2.11.0` | `collectAsStateWithLifecycle` 观察 WorkInfo |
+| 依赖                               | 版本           | 用途                                        |
+|----------------------------------|--------------|-------------------------------------------|
+| `androidx.work:work-runtime-ktx` | `2.12.0`     | WorkManager + CoroutineWorker 支持          |
+| Kotlin                           | `2.4.20`     | 协程 / suspend 支持                           |
+| Compose BOM                      | `2026.09.00` | UI 层                                      |
+| `lifecycle-runtime-compose`      | `2.11.0`     | `collectAsStateWithLifecycle` 观察 WorkInfo |
 
 ---
 
@@ -26,12 +26,12 @@ WorkManager 是 Android 官方推荐的**持久化后台任务调度器**：
 
 Android 后台任务有多种方案，选型取决于「是否需要保证执行」：
 
-| 需求 | 推荐方案 | 原因 |
-| --- | --- | --- |
-| 必须执行（上传/同步/清理） | **WorkManager** | 持久化、自动重试、约束感知 |
-| 精确定时（闹钟/提醒） | AlarmManager | WorkManager 不保证精确时间 |
-| 用户可见的持续任务（音乐/导航） | Foreground Service | WorkManager 是后台不可见的 |
-| 即时响应推送 | FCM + WorkManager | FCM 触发 → WorkManager 执行 |
+| 需求               | 推荐方案               | 原因                      |
+|------------------|--------------------|-------------------------|
+| 必须执行（上传/同步/清理）   | **WorkManager**    | 持久化、自动重试、约束感知           |
+| 精确定时（闹钟/提醒）      | AlarmManager       | WorkManager 不保证精确时间     |
+| 用户可见的持续任务（音乐/导航） | Foreground Service | WorkManager 是后台不可见的     |
+| 即时响应推送           | FCM + WorkManager  | FCM 触发 → WorkManager 执行 |
 
 一句话记忆：
 
@@ -156,17 +156,17 @@ workManager.getWorkInfoByIdFlow(request.id).collect { info ->
 
 **关键 API 说明**：
 
-| API | 作用 |
-| --- | --- |
-| `CoroutineWorker` | Worker 的协程版本，`doWork()` 是 suspend 函数，可直接调用协程 API |
-| `doWork(): Result` | 在后台线程执行的工作逻辑，必须返回 success/failure/retry |
-| `inputData` / `outputData` | 键值对数据传递，类型安全（String/Int/Long/Boolean/Float/Double/ByteArray） |
-| `setProgress(data)` | 报告中间进度，UI 通过 `WorkInfo.progress` 读取 |
-| `Constraints.Builder` | 声明运行条件：网络类型、充电、存储空间、电池电量、设备空闲 |
-| `OneTimeWorkRequestBuilder<W>()` | DSL 构建一次性请求，可链式设置 input/constraints/tags/backoff |
-| `enqueue(request)` | 将请求加入 WorkManager 调度队列 |
-| `getWorkInfoByIdFlow(id)` | 返回 `Flow<WorkInfo?>`，实时反映任务生命周期 |
-| `cancelWorkById(id)` | 取消指定任务 |
+| API                              | 作用                                                           |
+|----------------------------------|--------------------------------------------------------------|
+| `CoroutineWorker`                | Worker 的协程版本，`doWork()` 是 suspend 函数，可直接调用协程 API             |
+| `doWork(): Result`               | 在后台线程执行的工作逻辑，必须返回 success/failure/retry                      |
+| `inputData` / `outputData`       | 键值对数据传递，类型安全（String/Int/Long/Boolean/Float/Double/ByteArray） |
+| `setProgress(data)`              | 报告中间进度，UI 通过 `WorkInfo.progress` 读取                          |
+| `Constraints.Builder`            | 声明运行条件：网络类型、充电、存储空间、电池电量、设备空闲                                |
+| `OneTimeWorkRequestBuilder<W>()` | DSL 构建一次性请求，可链式设置 input/constraints/tags/backoff             |
+| `enqueue(request)`               | 将请求加入 WorkManager 调度队列                                       |
+| `getWorkInfoByIdFlow(id)`        | 返回 `Flow<WorkInfo?>`，实时反映任务生命周期                              |
+| `cancelWorkById(id)`             | 取消指定任务                                                       |
 
 > **要点**：`Result.retry()` 会按退避策略（默认指数退避）重新调度；
 > `setProgress()` 的数据大小限制为 10KB；`WorkInfo.State` 是单向流转，不会回退。
@@ -201,11 +201,11 @@ workManager.getWorkInfosForUniqueWorkFlow("daily_sync").collect { infos -> ... }
 
 **ExistingPeriodicWorkPolicy 对比**：
 
-| 策略 | 行为 | 适用场景 |
-| --- | --- | --- |
-| `KEEP` | 已有同名任务 → 保留旧的，忽略新请求 | 首次初始化、防止重复创建 |
-| `REPLACE` | 取消旧任务，用新请求替代（重置计时器） | 参数变更需要立即生效 |
-| `UPDATE` | 保留执行记录，仅更新约束/输入（不重置计时器） | 微调约束，不打断节奏 |
+| 策略        | 行为                      | 适用场景         |
+|-----------|-------------------------|--------------|
+| `KEEP`    | 已有同名任务 → 保留旧的，忽略新请求     | 首次初始化、防止重复创建 |
+| `REPLACE` | 取消旧任务，用新请求替代（重置计时器）     | 参数变更需要立即生效   |
+| `UPDATE`  | 保留执行记录，仅更新约束/输入（不重置计时器） | 微调约束，不打断节奏   |
 
 > **要点**：WorkManager 周期任务最短间隔 15 分钟；更短的值会被自动拉长。
 > 周期任务适合「定期同步 / 清理缓存 / 上报统计」等不需要精确定时的场景。
@@ -238,13 +238,13 @@ val gen = workManager.getWorkInfoById(existingId).getGeneration()
 
 **updateWork vs cancel + enqueue**：
 
-| | updateWork | cancel + enqueue |
-| --- | --- | --- |
-| 原子性 | ✅ 原子操作 | ❌ 两步，有竞态窗口 |
-| 执行记录 | 保留 | 丢失 |
-| 中间状态 | 不中断 | 可能丢失正在计算的结果 |
-| 周期任务计时 | 不重置 | 需手动对齐偏移 |
-| 换 Worker 类型 | ❌ 不支持 | ✅ 支持 |
+|             | updateWork | cancel + enqueue |
+|-------------|------------|------------------|
+| 原子性         | ✅ 原子操作     | ❌ 两步，有竞态窗口       |
+| 执行记录        | 保留         | 丢失               |
+| 中间状态        | 不中断        | 可能丢失正在计算的结果      |
+| 周期任务计时      | 不重置        | 需手动对齐偏移          |
+| 换 Worker 类型 | ❌ 不支持      | ✅ 支持             |
 
 > **要点**：`setId()` 是 updateWork 的前提；`generation` 从 0 开始，每次成功更新 +1；
 > updateWork 返回 `ListenableFuture<UpdateResult>`，可异步检查结果。

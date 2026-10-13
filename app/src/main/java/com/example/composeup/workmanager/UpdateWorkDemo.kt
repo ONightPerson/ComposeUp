@@ -23,7 +23,6 @@ import androidx.work.NetworkType
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkInfo
 import androidx.work.WorkManager
-import androidx.work.await
 import java.util.Date
 
 /**
@@ -36,8 +35,8 @@ import java.util.Date
  *
  * 核心 API：
  * - [WorkManager.updateWork]：原地更新已有 WorkRequest 的约束/输入，无需 cancel + enqueue；
- * - [WorkRequest.Builder.setId]：新请求必须携带旧请求的 ID 才能匹配更新目标；
- * - [WorkInfo.getGeneration]：每次 updateWork 成功后 generation +1，用于追踪版本。
+ * - [androidx.work.WorkRequest.Builder.setId]：新请求必须携带旧请求的 ID 才能匹配更新目标；
+ * - [WorkInfo.generation]：每次 updateWork 成功后 generation +1，用于追踪版本。
  *
  * 为什么不用 cancel + enqueue？
  * - cancel 会丢失正在计算的中间结果（如已构建一半的请求体）；

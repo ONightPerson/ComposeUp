@@ -5,6 +5,7 @@ import androidx.work.CoroutineWorker
 import androidx.work.Data
 import androidx.work.WorkerParameters
 import kotlinx.coroutines.delay
+import kotlin.time.Duration.Companion.milliseconds
 
 /**
  * 模拟「上传图片」的一次性任务。
@@ -22,7 +23,7 @@ class UploadWorker(
         val simulateFailure = inputData.getBoolean(KEY_SIMULATE_FAILURE, false)
 
         for (i in 1..3) {
-            delay(1000)
+            delay(1000.milliseconds)
             setProgress(
                 Data.Builder()
                     .putInt(KEY_PROGRESS, i * 33)
@@ -65,7 +66,7 @@ class DailySyncWorker(
 ) : CoroutineWorker(appContext, workerParams) {
 
     override suspend fun doWork(): Result {
-        delay(1500)
+        delay(1500.milliseconds)
         val syncCount = inputData.getInt(KEY_SYNC_COUNT, 0) + 1
         return Result.success(
             Data.Builder()
