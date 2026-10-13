@@ -30,6 +30,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.Icons.Filled
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.filled.Animation
+import androidx.compose.material.icons.filled.Build
 import androidx.compose.material.icons.filled.Code
 import androidx.compose.material.icons.filled.ExpandLess
 import androidx.compose.material.icons.filled.ExpandMore
@@ -88,6 +89,7 @@ import com.example.composeup.remember.RememberHub
 import com.example.composeup.screenrecord.ScreenRecordHub
 import com.example.composeup.sideeffects.SideEffectsHub
 import com.example.composeup.ui.theme.ComposeUpTheme
+import com.example.composeup.workmanager.WorkManagerHub
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -120,6 +122,7 @@ private enum class Destination(
     DataStore("存储选型全家桶", "Preferences / Proto DataStore 与 Room 选型、应用场景对比演练", Filled.Settings),
     Local("CompositionLocal 专家级", "跨层级状态传递：权限、语言切换、主题扩展、埋点上下文", Filled.Layers),
     Navigation3("Jetpack Navigation 3", "保存状态、结果回传、定制 Metadata 独立动画、大屏 Scenes、Deep Links", Icons.Default.Code),
+    WorkManager("WorkManager 后台任务", "一次性 / 周期性任务调度、约束条件、updateWork 原地更新", Filled.Build),
 }
 
 /**
@@ -161,6 +164,7 @@ private fun ComposeUpRoot() {
                     context.startActivity(Intent(context, Nav3Activity::class.java))
                     destination = null
                 }
+                Destination.WorkManager -> WorkManagerHub(contentModifier)
             }
         }
     }
