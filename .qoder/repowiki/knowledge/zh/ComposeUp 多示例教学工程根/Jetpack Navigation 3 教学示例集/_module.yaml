@@ -1,0 +1,9 @@
+schema_version: 1
+module_path: navigation3_demo
+title: Jetpack Navigation 3 教学示例集
+scope:
+    - app/src/main/java/com/example/composeup/navigation3/
+source_files: []
+depends_on: []
+related_to:
+    - path: ui_theme

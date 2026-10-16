@@ -1,0 +1,169 @@
+# 知识卡导出索引文件
+schema_version: 1
+locale: zh-CN
+branch: main
+nodes_managed: true
+exported_at: "2026-10-16T03:19:40Z"
+modules:
+    "":
+        dir_name: ComposeUp 多示例教学工程根
+        title: ComposeUp 多示例教学工程根
+        scope:
+            - build.gradle.kts
+            - settings.gradle.kts
+            - gradle.properties
+            - gradlew.bat
+            - .gitignore
+            - docs/
+            - gradle/
+            - gradlew
+        source_files: []
+        children:
+            - animation_demo
+            - architecture_demo
+            - compositionlocal_demo
+            - datastore_demo
+            - delegates_demo
+            - flow_demo
+            - keywords_demo
+            - navigation3_demo
+            - nestedscroll_demo
+            - remember_demo
+            - screenrecord_demo
+            - sideeffects_demo
+            - ui_theme
+            - workmanager_demo
+        depends_on: []
+        related_to: []
+    animation_demo:
+        dir_name: Compose 动画进阶示例集
+        title: Compose 动画进阶示例集
+        scope:
+            - app/src/main/java/com/example/composeup/animation/
+        source_files: []
+        children: []
+        depends_on: []
+        related_to: []
+    architecture_demo:
+        dir_name: 架构分层示例应用（Architecture Demo）
+        title: 架构分层示例应用（Architecture Demo）
+        scope:
+            - app/src/main/java/com/example/composeup/architecture/
+        source_files: []
+        children: []
+        depends_on: []
+        related_to: []
+    compositionlocal_demo:
+        dir_name: CompositionLocal 专家级应用示例集
+        title: CompositionLocal 专家级应用示例集
+        scope:
+            - app/src/main/java/com/example/composeup/compositionlocal/
+        source_files: []
+        children: []
+        depends_on: []
+        related_to: []
+    datastore_demo:
+        dir_name: Android 本地持久化选型演示（DataStore + Room）
+        title: Android 本地持久化选型演示（DataStore + Room）
+        scope:
+            - app/src/main/java/com/example/composeup/datastore/
+        source_files: []
+        children: []
+        depends_on: []
+        related_to: []
+    delegates_demo:
+        dir_name: Kotlin 委托机制演示
+        title: Kotlin 委托机制演示
+        scope:
+            - app/src/main/java/com/example/composeup/delegates/
+        source_files: []
+        children: []
+        depends_on: []
+        related_to: []
+    flow_demo:
+        dir_name: Kotlin Flow 全家桶教学示例
+        title: Kotlin Flow 全家桶教学示例
+        scope:
+            - app/src/main/java/com/example/composeup/flow/
+        source_files: []
+        children: []
+        depends_on: []
+        related_to:
+            - path: remember_demo
+    keywords_demo:
+        dir_name: Compose 底层 Kotlin 关键字教学示例
+        title: Compose 底层 Kotlin 关键字教学示例
+        scope:
+            - app/src/main/java/com/example/composeup/keywords/
+        source_files: []
+        children: []
+        depends_on: []
+        related_to: []
+    navigation3_demo:
+        dir_name: Jetpack Navigation 3 教学示例集
+        title: Jetpack Navigation 3 教学示例集
+        scope:
+            - app/src/main/java/com/example/composeup/navigation3/
+        source_files: []
+        children: []
+        depends_on: []
+        related_to:
+            - path: ui_theme
+    nestedscroll_demo:
+        dir_name: Compose 嵌套滚动进阶示例集
+        title: Compose 嵌套滚动进阶示例集
+        scope:
+            - app/src/main/java/com/example/composeup/nestedscroll/
+        source_files: []
+        children: []
+        depends_on: []
+        related_to: []
+    remember_demo:
+        dir_name: Compose remember 状态记忆与持久化示例集
+        title: Compose remember 状态记忆与持久化示例集
+        scope:
+            - app/src/main/java/com/example/composeup/remember/
+        source_files: []
+        children: []
+        depends_on: []
+        related_to:
+            - path: flow_demo
+    screenrecord_demo:
+        dir_name: 屏幕录制演示模块
+        title: 屏幕录制演示模块
+        scope:
+            - app/src/main/java/com/example/composeup/screenrecord/
+        source_files: []
+        children: []
+        depends_on: []
+        related_to:
+            - path: workmanager_demo
+    sideeffects_demo:
+        dir_name: Compose 副作用（Side-effects）示例集
+        title: Compose 副作用（Side-effects）示例集
+        scope:
+            - app/src/main/java/com/example/composeup/sideeffects/
+        source_files: []
+        children: []
+        depends_on: []
+        related_to: []
+    ui_theme:
+        dir_name: Compose Material3 主题定义
+        title: Compose Material3 主题定义
+        scope:
+            - app/src/main/java/com/example/composeup/ui/theme/
+        source_files: []
+        children: []
+        depends_on: []
+        related_to:
+            - path: navigation3_demo
+    workmanager_demo:
+        dir_name: WorkManager 后台任务演示示例
+        title: WorkManager 后台任务演示示例
+        scope:
+            - app/src/main/java/com/example/composeup/workmanager/
+        source_files: []
+        children: []
+        depends_on: []
+        related_to:
+            - path: screenrecord_demo

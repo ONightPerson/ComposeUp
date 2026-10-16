@@ -1,0 +1,8 @@
+schema_version: 1
+module_path: animation_demo
+title: Compose 动画进阶示例集
+scope:
+    - app/src/main/java/com/example/composeup/animation/
+source_files: []
+depends_on: []
+related_to: []

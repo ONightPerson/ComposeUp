@@ -1,0 +1,15 @@
+schema_version: 1
+module_path: ""
+title: ComposeUp 多示例教学工程根
+scope:
+    - build.gradle.kts
+    - settings.gradle.kts
+    - gradle.properties
+    - gradlew.bat
+    - .gitignore
+    - docs/
+    - gradle/
+    - gradlew
+source_files: []
+depends_on: []
+related_to: []

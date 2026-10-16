@@ -1,0 +1,8 @@
+schema_version: 1
+module_path: datastore_demo
+title: Android 本地持久化选型演示（DataStore + Room）
+scope:
+    - app/src/main/java/com/example/composeup/datastore/
+source_files: []
+depends_on: []
+related_to: []

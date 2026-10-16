@@ -1,0 +1,9 @@
+schema_version: 1
+module_path: screenrecord_demo
+title: 屏幕录制演示模块
+scope:
+    - app/src/main/java/com/example/composeup/screenrecord/
+source_files: []
+depends_on: []
+related_to:
+    - path: workmanager_demo

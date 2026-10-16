@@ -1,0 +1,8 @@
+schema_version: 1
+module_path: keywords_demo
+title: Compose 底层 Kotlin 关键字教学示例
+scope:
+    - app/src/main/java/com/example/composeup/keywords/
+source_files: []
+depends_on: []
+related_to: []

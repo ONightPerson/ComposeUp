@@ -83,8 +83,8 @@ import com.example.composeup.compositionlocal.LocalHub
 import com.example.composeup.datastore.DatastoreHub
 import com.example.composeup.flow.FlowHub
 import com.example.composeup.keywords.KeywordsHub
-import com.example.composeup.navigation3.Nav3Activity
 import com.example.composeup.nestedscroll.NestedScrollHub
+import com.example.composeup.navigation3.Nav3Hub
 import com.example.composeup.remember.RememberHub
 import com.example.composeup.screenrecord.ScreenRecordHub
 import com.example.composeup.sideeffects.SideEffectsHub
@@ -160,9 +160,7 @@ private fun ComposeUpRoot() {
                 Destination.DataStore -> DatastoreHub(contentModifier)
                 Destination.Local -> LocalHub(contentModifier)
                 Destination.Navigation3 -> {
-                    val context = LocalContext.current
-                    context.startActivity(Intent(context, Nav3Activity::class.java))
-                    destination = null
+                    Nav3Hub(contentModifier)
                 }
                 Destination.WorkManager -> WorkManagerHub(contentModifier)
             }

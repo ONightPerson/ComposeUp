@@ -1,0 +1,9 @@
+schema_version: 1
+module_path: workmanager_demo
+title: WorkManager 后台任务演示示例
+scope:
+    - app/src/main/java/com/example/composeup/workmanager/
+source_files: []
+depends_on: []
+related_to:
+    - path: screenrecord_demo

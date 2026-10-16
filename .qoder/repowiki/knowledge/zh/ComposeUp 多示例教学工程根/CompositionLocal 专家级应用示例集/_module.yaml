@@ -1,0 +1,8 @@
+schema_version: 1
+module_path: compositionlocal_demo
+title: CompositionLocal 专家级应用示例集
+scope:
+    - app/src/main/java/com/example/composeup/compositionlocal/
+source_files: []
+depends_on: []
+related_to: []

@@ -1,0 +1,8 @@
+schema_version: 1
+module_path: nestedscroll_demo
+title: Compose 嵌套滚动进阶示例集
+scope:
+    - app/src/main/java/com/example/composeup/nestedscroll/
+source_files: []
+depends_on: []
+related_to: []

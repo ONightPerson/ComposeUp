@@ -1,0 +1,8 @@
+schema_version: 1
+module_path: sideeffects_demo
+title: Compose 副作用（Side-effects）示例集
+scope:
+    - app/src/main/java/com/example/composeup/sideeffects/
+source_files: []
+depends_on: []
+related_to: []

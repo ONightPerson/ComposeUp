@@ -1,0 +1,8 @@
+schema_version: 1
+module_path: architecture_demo
+title: 架构分层示例应用（Architecture Demo）
+scope:
+    - app/src/main/java/com/example/composeup/architecture/
+source_files: []
+depends_on: []
+related_to: []

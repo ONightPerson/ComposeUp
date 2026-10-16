@@ -1,0 +1,8 @@
+schema_version: 1
+module_path: delegates_demo
+title: Kotlin 委托机制演示
+scope:
+    - app/src/main/java/com/example/composeup/delegates/
+source_files: []
+depends_on: []
+related_to: []
