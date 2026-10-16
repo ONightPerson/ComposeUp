@@ -84,9 +84,17 @@ internal fun BackStackDemo(modifier: Modifier = Modifier, onExit: () -> Unit) {
                     backStack.add(SettingsKey)
                     log("push → SettingsKey")
                 }
-                DemoOutlinedButton("pop（removeLastOrNull）") {
-                    val popped = backStack.removeLastOrNull()
-                    log(if (popped != null) "pop ← $popped" else "栈已空，忽略")
+                DemoOutlinedButton(
+                    text = "pop（removeLastOrNull）",
+                    // NavDisplay 不允许空栈：到栈底（只剩 Home）时禁用 pop，避免把栈清空导致崩溃
+                    enabled = backStack.size > 1,
+                ) {
+                    if (backStack.size > 1) {
+                        val popped = backStack.removeLastOrNull()
+                        log("pop ← $popped")
+                    } else {
+                        log("已到栈底 Home，不能再 pop（NavDisplay 不允许空栈）")
+                    }
                 }
                 DemoOutlinedButton("直接改写栈") {
                     // 你拥有栈，所以可以任意增删：这里一次性重置为 Home + 两个 Detail。

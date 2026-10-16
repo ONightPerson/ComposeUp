@@ -218,6 +218,7 @@ navigation3/
 5. **ResultEventBus 寻址**：显式 key 与类型派生 key 互不相通，收发两端要一致。
 6. **局部变量别和扩展函数同名**：`val log = ...` 再配 `SnapshotStateList<String>.log(...)` 扩展，调用 `log("x")` 会因「找不到隐式接收者」失败。本模块改用 `DemoLog` 包装类（既是 `List<String>` 又有 `operator fun invoke`）绕开该坑，调用点保持 `log("...")` / `LogBox(lines = log)` 的自然写法。
 7. **Scene 的 key 与 equals**：自定义 Scene 用 `data class` 天然满足 `equals/hashCode`；scene decorator 返回的 Scene 其 `key` 应从被装饰 Scene 派生，否则内建转场动画会失效。
+8. **NavDisplay 不允许空栈**：`backStack` 一旦被清空会抛 `IllegalArgumentException: NavDisplay backstack cannot be empty`。所以任何 pop / 「返回」操作都要守卫 `if (backStack.size > 1)` 再 `removeLastOrNull()`；栈底时的返回应改为退出示例（`onExit()`）或结束 Activity（`finish()`）。本模块 ① 的 pop 按钮、⑥ 深链单条栈的返回、`Nav3Activity` 的 `onBack` 均据此加了守卫。
 
 ---
 

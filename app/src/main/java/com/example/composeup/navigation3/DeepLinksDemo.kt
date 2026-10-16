@@ -84,13 +84,13 @@ internal fun DeepLinksDemo(modifier: Modifier = Modifier, onExit: () -> Unit) {
                     entry<UserProfileKey> { key ->
                         Pane("UserProfile 用户资料", color = MaterialTheme.colorScheme.tertiaryContainer) {
                             Text("从 URI 抽取的 id = ${key.id}", style = MaterialTheme.typography.bodyMedium)
-                            ButtonRow { DemoOutlinedButton("返回") { backStack.removeLastOrNull() } }
+                            ButtonRow { DemoOutlinedButton("返回") { if (backStack.size > 1) backStack.removeLastOrNull() } }
                         }
                     }
                     entry<DialerKey> { key ->
                         Pane("Dialer 拨号", color = MaterialTheme.colorScheme.secondaryContainer) {
                             Text("自定义 matcher 解析出的号码 = ${key.phoneNumber}", style = MaterialTheme.typography.bodyMedium)
-                            ButtonRow { DemoOutlinedButton("返回") { backStack.removeLastOrNull() } }
+                            ButtonRow { DemoOutlinedButton("返回") { if (backStack.size > 1) backStack.removeLastOrNull() } }
                         }
                     }
                 },

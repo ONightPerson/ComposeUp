@@ -69,7 +69,10 @@ class Nav3Activity : ComponentActivity() {
                 NavDisplay(
                     backStack = backStack,
                     modifier = Modifier.fillMaxSize(),
-                    onBack = { backStack.removeLastOrNull() },
+                    onBack = {
+                        // NavDisplay 不允许空栈：到栈底时结束 Activity，而不是把栈清空
+                        if (backStack.size > 1) backStack.removeLastOrNull() else finish()
+                    },
                     entryDecorators = listOf(rememberSaveableStateHolderNavEntryDecorator()),
                     entryProvider = entryProvider {
                         entry<HomeKey> {

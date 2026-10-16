@@ -1,6 +1,5 @@
 package com.example.composeup
 
-import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
@@ -68,7 +67,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.onSizeChanged
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -83,8 +81,8 @@ import com.example.composeup.compositionlocal.LocalHub
 import com.example.composeup.datastore.DatastoreHub
 import com.example.composeup.flow.FlowHub
 import com.example.composeup.keywords.KeywordsHub
-import com.example.composeup.nestedscroll.NestedScrollHub
 import com.example.composeup.navigation3.Nav3Hub
+import com.example.composeup.nestedscroll.NestedScrollHub
 import com.example.composeup.remember.RememberHub
 import com.example.composeup.screenrecord.ScreenRecordHub
 import com.example.composeup.sideeffects.SideEffectsHub
