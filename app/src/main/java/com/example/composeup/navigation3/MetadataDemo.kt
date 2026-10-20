@@ -29,7 +29,7 @@ import kotlinx.serialization.Serializable
  * ④ 配置 metadata：给 NavEntry 挂类型安全的元信息。
  *
  * metadata 本质是 `Map<String, Any>`，库用它在 **NavEntry / Scene / NavDisplay** 之间传递信息。
- * 直接写字符串 key 容易拼错、类型不安全，所以库提供了 **metadata DSL + NavMetadataKey **：
+ * 直接写字符串 key 容易拼错、类型不安全，所以库提供了 **metadata DSL + NavMetadataKey**：
  * 用 `metadata { put(SomeKey, value) }` 写，用 `map.SomeKey` / `map.contains(SomeKey)` 读，
  * 值的类型由 NavMetadataKey 的泛型锁死。
  *
